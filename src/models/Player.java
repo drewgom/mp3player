@@ -19,7 +19,6 @@ public class Player {
     }
 
     private void playNewSong(Song song)  {
-        state = State.PLAYING;
 
     }
 
