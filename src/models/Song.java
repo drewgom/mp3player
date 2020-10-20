@@ -7,13 +7,15 @@ public class Song {
     private String title;
     private Float length;
     private String genre;
+    private Integer year;
     private ArrayList<Artist> artists;
 
-    public Song(Integer pk, String title, Float length, String genre, ArrayList<Artist> artists) {
+    public Song(Integer pk, String title, Float length, String genre, Integer year, ArrayList<Artist> artists) {
         this.pk = pk;
         this.title = title;
         this.length = length;
         this.genre = genre;
+        this.year = year;
         this.artists = artists;
     }
 
@@ -35,5 +37,9 @@ public class Song {
 
     public ArrayList<Artist> getArtists() {
         return artists;
+    }
+
+    public Integer getYear() {
+        return year;
     }
 }
