@@ -12,9 +12,12 @@ public class Library {
 
     private ArrayList<Song> songs;
 
+    private static Integer pkcounter;
+
     public Library()    {
         // Loads the library in from the database
         loadSongsFromDB();
+        pkcounter = 1;
     }
 
     public void loadSongsFromDB()   {
@@ -58,8 +61,9 @@ public class Library {
                     artists.add(new Artist(artistName.get(i)));
                 }
 
-                Song song = new Song (1, title, length, genre, album, artists);
+                Song song = new Song (pkcounter, title, length, genre, album, artists, path);
                 songs.add(song);
+                pkcounter++;
                 // sort the array list alphabetically by title
                 Collections.sort(songs);
             } else {
@@ -87,7 +91,7 @@ public class Library {
         // if the song cannot be deleted, throw the corresponding exception
     }
 
-    public ArrayList<Song> getLibrary() {
+    public ArrayList<Song> getSongs() {
         return songs;
     }
 }

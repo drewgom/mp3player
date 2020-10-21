@@ -8,15 +8,17 @@ public class Song implements Comparable<Song>{
     private Long length;
     private String genre;
     private String album;
+    private String path;
     private ArrayList<Artist> artists;
 
-    public Song(Integer pk, String title, Long length, String genre, String album, ArrayList<Artist> artists) {
+    public Song(Integer pk, String title, Long length, String genre, String album, ArrayList<Artist> artists, String path) {
         this.pk = pk;
         this.title = title;
         this.length = length;
         this.genre = genre;
         this.artists = artists;
         this.album = album;
+        this.path = path;
     }
 
     public String getGenre() {
@@ -41,6 +43,10 @@ public class Song implements Comparable<Song>{
 
     public String getAlbum() {
         return album;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     @Override
