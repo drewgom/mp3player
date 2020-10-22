@@ -16,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.Component;
+import java.awt.BorderLayout;
 
 public class PlayerView{
 	private JFrame mainWindow = null;
@@ -26,38 +28,26 @@ public class PlayerView{
 	
 	public PlayerView(){
 		this.mainWindow = new JFrame(title + " - Now Playing: Nothing");
+		mainWindow.setMinimumSize(new Dimension(480, 400));
 		mainWindow.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Svona\\Desktop\\Git\\mp3player\\res\\window-icon.png"));
 		mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
-		mainWindow.getContentPane().setLayout(gridBagLayout);
+		mainWindow.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JLabel NowPlaying = new JLabel("Now Playing - Nothing");
-		GridBagConstraints gbc_NowPlaying = new GridBagConstraints();
-		gbc_NowPlaying.gridheight = 2;
-		gbc_NowPlaying.weightx = 10.0;
-		gbc_NowPlaying.insets = new Insets(0, 0, 5, 5);
-		gbc_NowPlaying.gridx = 0;
-		gbc_NowPlaying.gridy = 0;
-		mainWindow.getContentPane().add(NowPlaying, gbc_NowPlaying);
+		NowPlaying.setHorizontalAlignment(SwingConstants.CENTER);
+		mainWindow.getContentPane().add(NowPlaying, BorderLayout.CENTER);
 		
 		JPanel Interface = new JPanel();
-		GridBagConstraints gbc_Interface = new GridBagConstraints();
-		gbc_Interface.gridx = 1;
-		gbc_Interface.fill = GridBagConstraints.VERTICAL;
-		mainWindow.getContentPane().add(Interface, gbc_Interface);
+		mainWindow.getContentPane().add(Interface, BorderLayout.EAST);
 		
 		LibraryTable = new JTable();
 		LibraryTable.setPreferredSize(new Dimension(200, 200));
 		LibraryTable.setFillsViewportHeight(true);
 		
 		JPanel LibraryControls = new JPanel();
-		LibraryControls.setSize(new Dimension(200, 70));
 		
 		JButton Add = new JButton();
+		Add.setAlignmentX(Component.CENTER_ALIGNMENT);
 		Add.addActionListener(this.listener);
 		LibraryControls.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		Add.setActionCommand("add");
@@ -66,6 +56,7 @@ public class PlayerView{
 		LibraryControls.add(Add);
 		
 		JButton Remove = new JButton();
+		Remove.setAlignmentX(Component.CENTER_ALIGNMENT);
 		Remove.addActionListener(this.listener);
 		Remove.setActionCommand("remove");
 		Remove.setPreferredSize(new Dimension(50, 50));
@@ -73,91 +64,51 @@ public class PlayerView{
 		LibraryControls.add(Remove);
 		
 		JPanel PlaybackControls = new JPanel();
-		PlaybackControls.setMinimumSize(new Dimension(300, 70));
-		PlaybackControls.setMaximumSize(new Dimension(32767, 70));
-		PlaybackControls.setPreferredSize(new Dimension(300, 70));
 		
 		JButton SkipBack = new JButton();
+		SkipBack.setAlignmentX(Component.CENTER_ALIGNMENT);
 		SkipBack.addActionListener(this.listener);
 		SkipBack.setActionCommand("skipBack");
 		SkipBack.setPreferredSize(new Dimension(50, 50));
 		SkipBack.setIcon(iconDownscale(new ImageIcon("res/previous-button.png")));
 		
 		JButton Rewind = new JButton();
+		Rewind.setAlignmentX(Component.CENTER_ALIGNMENT);
 		Rewind.addActionListener(this.listener);
 		Rewind.setActionCommand("rewind");
 		Rewind.setPreferredSize(new Dimension(50, 50));
 		Rewind.setIcon(iconDownscale(new ImageIcon("res/rewind-button.png")));
 		
 		JButton PlayPause = new JButton();
+		PlayPause.setAlignmentX(Component.CENTER_ALIGNMENT);
 		PlayPause.addActionListener(this.listener);
 		PlayPause.setActionCommand("play");
 		PlayPause.setPreferredSize(new Dimension(50, 50));
 		PlayPause.setIcon(iconDownscale(new ImageIcon("res/play-button.png")));
 		
 		JButton FastForward = new JButton();
+		FastForward.setAlignmentX(Component.CENTER_ALIGNMENT);
 		FastForward.addActionListener(this.listener);
 		FastForward.setActionCommand("fastForward");
 		FastForward.setPreferredSize(new Dimension(50, 50));
 		FastForward.setIcon(iconDownscale(new ImageIcon("res/fast-forward-button.png")));
 		
 		JButton SkipForward = new JButton();
+		SkipForward.setAlignmentX(Component.CENTER_ALIGNMENT);
 		SkipForward.addActionListener(this.listener);
 		SkipForward.setActionCommand("skipForward");
 		SkipForward.setPreferredSize(new Dimension(50, 50));
 		SkipForward.setIcon(iconDownscale(new ImageIcon("res/next-button.png")));
-		GroupLayout gl_PlaybackControls = new GroupLayout(PlaybackControls);
-		gl_PlaybackControls.setHorizontalGroup(
-			gl_PlaybackControls.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_PlaybackControls.createSequentialGroup()
-					.addContainerGap(5, Short.MAX_VALUE)
-					.addComponent(SkipBack, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(Rewind, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(PlayPause, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(FastForward, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(SkipForward, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(20))
-		);
-		gl_PlaybackControls.setVerticalGroup(
-			gl_PlaybackControls.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_PlaybackControls.createSequentialGroup()
-					.addGap(5)
-					.addGroup(gl_PlaybackControls.createParallelGroup(Alignment.LEADING)
-						.addComponent(FastForward, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(SkipBack, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(Rewind, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(PlayPause, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(SkipForward, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(5))
-		);
-		PlaybackControls.setLayout(gl_PlaybackControls);
-		GroupLayout gl_Interface = new GroupLayout(Interface);
-		gl_Interface.setHorizontalGroup(
-			gl_Interface.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_Interface.createSequentialGroup()
-					.addGap(5)
-					.addGroup(gl_Interface.createParallelGroup(Alignment.TRAILING, false)
-						.addGroup(gl_Interface.createSequentialGroup()
-							.addComponent(LibraryTable, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)
-							.addGap(5))
-						.addComponent(LibraryControls, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)
-						.addComponent(PlaybackControls, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)))
-		);
-		gl_Interface.setVerticalGroup(
-			gl_Interface.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_Interface.createSequentialGroup()
-					.addComponent(LibraryTable, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(LibraryControls, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(PlaybackControls, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
-					.addGap(0, 0, Short.MAX_VALUE))
-		);
-		Interface.setLayout(gl_Interface);
+		PlaybackControls.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		PlaybackControls.add(SkipBack);
+		PlaybackControls.add(Rewind);
+		PlaybackControls.add(PlayPause);
+		PlaybackControls.add(FastForward);
+		PlaybackControls.add(SkipForward);
+		Interface.setLayout(new BorderLayout(0, 0));
+		Interface.add(LibraryTable, BorderLayout.CENTER);
+		Interface.add(LibraryControls, BorderLayout.NORTH);
+		Interface.add(PlaybackControls, BorderLayout.SOUTH);
 		
 		this.mainWindow.pack();
 		
