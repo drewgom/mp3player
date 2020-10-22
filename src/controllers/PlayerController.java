@@ -3,6 +3,8 @@ package controllers;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import views.PlayerView;
+
 public class PlayerController {
 	
 	public static class buttonListener implements ActionListener {
@@ -37,11 +39,16 @@ public class PlayerController {
 		}
 	};
 	
+	//change to instanciate when there's time
+	public static PlayerView pv = null;
+	
 	protected static void play() {
 		System.out.println("Play button pressed.");
+		pv.setPause();
 	}
 	protected static void pause() {
 		System.out.println("Pause button pressed.");
+		pv.setPlay();
 	}
 	protected static void fastForward() {
 		System.out.println("Fast forward button pressed.");

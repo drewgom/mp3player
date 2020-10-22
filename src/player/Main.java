@@ -1,5 +1,6 @@
 package player;
 
+import controllers.PlayerController;
 import javazoom.jlgui.basicplayer.BasicPlayer;
 import models.Library;
 import models.Player;
@@ -12,7 +13,8 @@ public class Main {
     	
     	
     	PlayerView view = new PlayerView();
-    	
+    	//change to instanciate?
+    	PlayerController.pv = view;
     	
     	
         //Player player = new Player();
