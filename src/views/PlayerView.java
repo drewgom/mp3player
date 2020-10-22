@@ -2,12 +2,13 @@ package views;
 
 import javax.swing.*;
 
+import controllers.LibraryController;
 import controllers.PlayerController;
 
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Dimension;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.FlowLayout;
 import java.awt.Component;
 import java.awt.BorderLayout;
@@ -16,10 +17,13 @@ import java.awt.CardLayout;
 public class PlayerView{
 	private JFrame mainWindow = null;
 	private String title = "Austin & Drew's MP3 Player";
+
 	private JTable LibraryTable = null;
 	private JPanel PlayPauseFlip = null;
 	private CardLayout PlayPauseCard = null;
-	private ActionListener listener = new PlayerController.buttonListener();
+	private ActionListener playerListener = new PlayerController.buttonListener();
+	private LibraryController libraryController = new LibraryController();
+	public static Integer row = null;
 	
 	private JButton [] playBackButtons = new JButton[5];
 	
@@ -36,16 +40,25 @@ public class PlayerView{
 		
 		JPanel Interface = new JPanel();
 		mainWindow.getContentPane().add(Interface, BorderLayout.EAST);
-		
-		LibraryTable = new JTable();
-		LibraryTable.setPreferredSize(new Dimension(200, 200));
+
+		LibraryTable = new JTable(libraryController.getTableObjects(), libraryController.getTableColumnNames());
+		LibraryTable.setPreferredSize(new Dimension(500, 200));
 		LibraryTable.setFillsViewportHeight(true);
+
+		MouseListener mouseListener = new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				row = LibraryTable.getSelectedRow();
+				System.out.println("Selected index = " + row);
+			}
+		};
+
+		LibraryTable.addMouseListener(mouseListener);
 		
 		JPanel LibraryControls = new JPanel();
 		
 		JButton Add = new JButton();
 		Add.setAlignmentX(Component.CENTER_ALIGNMENT);
-		Add.addActionListener(this.listener);
+		Add.addActionListener(this.playerListener);
 		LibraryControls.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		Add.setActionCommand("add");
 		Add.setPreferredSize(new Dimension(50, 50));
@@ -54,11 +67,12 @@ public class PlayerView{
 		
 		JButton Remove = new JButton();
 		Remove.setAlignmentX(Component.CENTER_ALIGNMENT);
-		Remove.addActionListener(this.listener);
+		Remove.addActionListener(this.playerListener);
 		Remove.setActionCommand("remove");
 		Remove.setPreferredSize(new Dimension(50, 50));
 		Remove.setIcon(iconDownscale(new ImageIcon("res/minus-button.png")));
 		LibraryControls.add(Remove);
+
 		Interface.setLayout(new BorderLayout(0, 0));
 		Interface.add(LibraryTable, BorderLayout.CENTER);
 		Interface.add(LibraryControls, BorderLayout.NORTH);
@@ -76,7 +90,7 @@ public class PlayerView{
 		SkipBackButton.setPreferredSize(new Dimension(50, 50));
 		SkipBackButton.setAlignmentX(0.5f);
 		SkipBackButton.setActionCommand("skipBack");
-		SkipBackButton.addActionListener(this.listener);
+		SkipBackButton.addActionListener(this.playerListener);
 		PlaybackControls.add(SkipBackButton);
 		
 		PlayPauseFlip = new JPanel();
@@ -90,7 +104,7 @@ public class PlayerView{
 		PlayButton.setPreferredSize(new Dimension(50, 50));
 		PlayButton.setAlignmentX(0.5f);
 		PlayButton.setActionCommand("play");
-		PlayButton.addActionListener(this.listener);
+		PlayButton.addActionListener(this.playerListener);
 		PlayPauseFlip.add(PlayButton, "play");
 		
 		JButton PauseButton = new JButton();
@@ -98,7 +112,7 @@ public class PlayerView{
 		PauseButton.setPreferredSize(new Dimension(50, 50));
 		PauseButton.setAlignmentX(0.5f);
 		PauseButton.setActionCommand("pause");
-		PauseButton.addActionListener(this.listener);
+		PauseButton.addActionListener(this.playerListener);
 		PlayPauseFlip.add(PauseButton, "pause");
 		
 		JButton StopButton = new JButton();
@@ -106,7 +120,7 @@ public class PlayerView{
 		StopButton.setPreferredSize(new Dimension(50, 50));
 		StopButton.setAlignmentX(0.5f);
 		StopButton.setActionCommand("stop");
-		StopButton.addActionListener(this.listener);
+		StopButton.addActionListener(this.playerListener);
 		PlaybackControls.add(StopButton);
 		
 		JButton SkipForwardButton = new JButton();
@@ -114,7 +128,7 @@ public class PlayerView{
 		SkipForwardButton.setPreferredSize(new Dimension(50, 50));
 		SkipForwardButton.setAlignmentX(0.5f);
 		SkipForwardButton.setActionCommand("skipForward");
-		SkipForwardButton.addActionListener(this.listener);
+		SkipForwardButton.addActionListener(this.playerListener);
 		PlaybackControls.add(SkipForwardButton);
 		
 		JSlider VolumeSlider = new JSlider();
@@ -130,41 +144,16 @@ public class PlayerView{
 		JMenu PlaybackMenu = new JMenu("Playback");
 		menuBar.add(PlaybackMenu);
 		
-		JMenuItem menuPlay = new JMenuItem("Play");
-		menuPlay.addActionListener(this.listener);
-		menuPlay.setActionCommand("play");
-		PlaybackMenu.add(menuPlay);
-		
-		JMenuItem menuPause = new JMenuItem("Pause");
-		menuPause.addActionListener(this.listener);
-		menuPause.setActionCommand("pause");
-		PlaybackMenu.add(menuPause);
-		
-		JMenuItem menuStop = new JMenuItem("Stop");
-		menuStop.addActionListener(this.listener);
-		menuStop.setActionCommand("stop");
-		PlaybackMenu.add(menuStop);
-		
-		JMenuItem menuSkipForward = new JMenuItem("Skip Forward");
-		menuSkipForward.addActionListener(this.listener);
-		menuSkipForward.setActionCommand("skipForward");
-		PlaybackMenu.add(menuSkipForward);
-		
-		JMenuItem menuSkipBack = new JMenuItem("Skip Back");
-		menuSkipBack.addActionListener(this.listener);
-		menuSkipBack.setActionCommand("skipBack");
-		PlaybackMenu.add(menuSkipBack);
-		
 		JMenu LibraryMenu = new JMenu("Library");
 		menuBar.add(LibraryMenu);
 		
 		JMenuItem menuAdd = new JMenuItem("Add");
-		menuAdd.addActionListener(this.listener);
+		menuAdd.addActionListener(this.playerListener);
 		menuAdd.setActionCommand("add");
 		LibraryMenu.add(menuAdd);
 		
 		JMenuItem menuRemove = new JMenuItem("Remove");
-		menuRemove.addActionListener(this.listener);
+		menuRemove.addActionListener(this.playerListener);
 		menuRemove.setActionCommand("remove");
 		LibraryMenu.add(menuRemove);
 		
@@ -207,5 +196,9 @@ public class PlayerView{
 	
 	private static ImageIcon iconDownscale(ImageIcon imageIcon) {
 		return new ImageIcon(imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+	}
+
+	public static Integer getRow()	{
+		return row;
 	}
 }

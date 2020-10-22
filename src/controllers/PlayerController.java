@@ -1,12 +1,19 @@
 package controllers;
 
+import models.Library;
+import models.Player;
+import models.Song;
+import models.State;
+import views.PlayerView;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import views.PlayerView;
 
 public class PlayerController {
-	
+	private static Player player = Player.getPlayer();
+
 	public static class buttonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -43,19 +50,36 @@ public class PlayerController {
 		System.out.println("Play button pressed.");
 		pv.setPause();
 	}
+
 	protected static void pause() {
 		System.out.println("Pause button pressed.");
 		pv.setPlay();
+
+		Integer row = PlayerView.getRow();
+		Song selectedSong = player.getLibrary().getSongs().get(row);
+
+		if (player.getState() == State.IDLE) {
+			System.out.println("Play button pressed and is idle");
+			player.play(selectedSong);
+		} else if (player.getCurrentSong() != selectedSong)	{
+			player.play(selectedSong);
+		} else	{
+			System.out.println("Play button pressed and is not idle");
+			player.play();
+		}
 	}
+
 	protected static void stop() {
 		System.out.println("Stop button pressed.");
-		pv.setPlay();
+		player.stop();
 	}
 	protected static void skipForward() {
 		System.out.println("Skip forward button pressed.");
+		player.next();
 	}
 	protected static void skipBack() {
 		System.out.println("Skip back button pressed.");
+		player.previous();
 	}
 	protected static void add() {
 		System.out.println("Add button pressed.");
