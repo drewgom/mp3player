@@ -13,8 +13,8 @@ public class PlayerDB {
     private static PlayerDB db;
 
     private PlayerDB()  {
-        user = "root";
-        pass = "root";
+        PlayerDB.user = "root";
+        PlayerDB.pass = "root";
     }
 
     public static PlayerDB getDb() {
