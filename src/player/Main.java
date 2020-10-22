@@ -10,15 +10,15 @@ public class Main {
         Player player = new Player();
         Library lib = player.getLibrary();
 
-        lib.addSongToLibrary("11.mp3");
-        lib.addSongToLibrary("21st_Century_Schizoid_Man.mp3");
-        lib.addSongToLibrary("Let_It_Be.mp3");
-        lib.addSongToLibrary("So_What.mp3");
+        lib.addSongToLibrary("default-songs\\11.mp3");
+        lib.addSongToLibrary("default-songs\\21st_Century_Schizoid_Man.mp3");
+        lib.addSongToLibrary("default-songs\\Let_It_Be.mp3");
+        lib.addSongToLibrary("default-songs\\So_What.mp3");
 
         System.out.println(lib.getSongs());
 
         player.play(lib.getSongs().get(0));
-
+        /**
         for (int i = 0; i < 750000; i++)   {
             System.out.println("idle");
         }
@@ -58,5 +58,6 @@ public class Main {
         for (int i = 0; i < 750000; i++)   {
             System.out.println("idle");
         }
+         **/
     }
 }
