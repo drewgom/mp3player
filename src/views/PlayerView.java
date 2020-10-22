@@ -4,18 +4,11 @@ import javax.swing.*;
 
 import controllers.PlayerController;
 
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -27,6 +20,8 @@ public class PlayerView{
 	private JPanel PlayPauseFlip = null;
 	private CardLayout PlayPauseCard = null;
 	private ActionListener listener = new PlayerController.buttonListener();
+	
+	private JButton [] playBackButtons = new JButton[6];
 	
 	public PlayerView(){
 		this.mainWindow = new JFrame(title + " - Now Playing: Nothing");
@@ -186,6 +181,14 @@ public class PlayerView{
 		
 		JMenu OptionsMenu = new JMenu("Options");
 		menuBar.add(OptionsMenu);
+		
+		this.playBackButtons[0] = SkipBackButton;
+		this.playBackButtons[1] = SkipForwardButton;
+		this.playBackButtons[2] = RewindButton;
+		this.playBackButtons[3] = FastForwardButton;
+		this.playBackButtons[4] = PauseButton;
+		this.playBackButtons[5] = PlayButton;
+		
 		this.mainWindow.setVisible(true);
 	}
 	
@@ -198,11 +201,15 @@ public class PlayerView{
 	}
 	
 	public void setGray() {
-		;
+		for(int i = 0; i < 6; i++) {
+			this.playBackButtons[i].setEnabled(false);
+		}
 	}
 	
 	public void setNormal() {
-		;
+		for(int i = 0; i < 6; i++) {
+			this.playBackButtons[i].setEnabled(true);
+		}
 	}
 	
 	private static ImageIcon iconDownscale(ImageIcon imageIcon) {
