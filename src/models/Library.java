@@ -17,8 +17,8 @@ public class Library {
 
     private Library()    {
         // Loads the library in from the database
-        loadSongsFromDB();
         pkcounter = 1;
+        loadSongsFromDB();
     }
 
     public static  Library getLibrary()    {

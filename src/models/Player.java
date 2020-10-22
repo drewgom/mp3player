@@ -132,11 +132,6 @@ public class Player {
         }
     }
 
-    public void restart() {
-        Song current = currentSong;
-        play(current);
-    }
-
     public State getState() {
         return state;
     }

@@ -49,11 +49,6 @@ public class PlayerController {
 	protected static void play() {
 		System.out.println("Play button pressed.");
 		pv.setPause();
-	}
-
-	protected static void pause() {
-		System.out.println("Pause button pressed.");
-		pv.setPlay();
 
 		Integer row = PlayerView.getRow();
 		Song selectedSong = player.getLibrary().getSongs().get(row);
@@ -67,6 +62,12 @@ public class PlayerController {
 			System.out.println("Play button pressed and is not idle");
 			player.play();
 		}
+	}
+
+	protected static void pause() {
+		System.out.println("Pause button pressed.");
+		pv.setPlay();
+		player.pause();
 	}
 
 	protected static void stop() {

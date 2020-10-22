@@ -143,7 +143,32 @@ public class PlayerView{
 		
 		JMenu PlaybackMenu = new JMenu("Playback");
 		menuBar.add(PlaybackMenu);
+
+		JMenuItem menuPlay = new JMenuItem("Play");
+		menuPlay.addActionListener(this.playerListener);
+		menuPlay.setActionCommand("play");
+		PlaybackMenu.add(menuPlay);
 		
+		JMenuItem menuPause = new JMenuItem("Pause");
+		menuPause.addActionListener(this.playerListener);
+		menuPause.setActionCommand("pause");
+		PlaybackMenu.add(menuPause);
+		
+		JMenuItem menuRewind = new JMenuItem("Skip Forward");
+		menuRewind.addActionListener(this.playerListener);
+		menuRewind.setActionCommand("skipForward");
+		PlaybackMenu.add(menuRewind);
+		
+		JMenuItem menuSkipBack = new JMenuItem("Skip Back");
+		menuSkipBack.addActionListener(this.playerListener);
+		menuSkipBack.setActionCommand("skipBack");
+		PlaybackMenu.add(menuSkipBack);
+
+		JMenuItem menuStop = new JMenuItem("Stop");
+		menuStop.addActionListener(this.playerListener);
+		menuStop.setActionCommand("stop");
+		PlaybackMenu.add(menuStop);
+
 		JMenu LibraryMenu = new JMenu("Library");
 		menuBar.add(LibraryMenu);
 		
