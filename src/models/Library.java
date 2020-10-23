@@ -10,14 +10,23 @@ import java.util.Collections;
 
 public class Library {
 
-    private ArrayList<Song> songs;
+    private static ArrayList<Song> songs;
 
     private static Integer pkcounter;
+    private static Library lib;
 
-    public Library()    {
+    private Library()    {
         // Loads the library in from the database
-        loadSongsFromDB();
         pkcounter = 1;
+        loadSongsFromDB();
+    }
+
+    public static  Library getLibrary()    {
+        if (lib == null)    {
+            lib = new Library();
+        }
+
+        return lib;
     }
 
     public void loadSongsFromDB()   {
@@ -31,8 +40,11 @@ public class Library {
 
         // sort the array list alphabetically by title
         //db.close();
-
         songs = new ArrayList<Song>();
+        addSongToLibrary("default-songs/11.mp3");
+        addSongToLibrary("default-songs/21st_Century_Schizoid_Man.mp3");
+        addSongToLibrary("default-songs/Let_It_Be.mp3");
+        addSongToLibrary("default-songs/So_What.mp3");
     }
 
     public void addSongToLibrary(String path)  {
@@ -55,6 +67,7 @@ public class Library {
                 // create the song if needed
 
                 // create a song object out of the metadata, and add the song to the array list of songs
+
 
                 ArrayList<Artist> artists = new ArrayList<>();
                 for (int i = 0; i < artistName.size(); i++) {

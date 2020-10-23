@@ -5,23 +5,25 @@ import javazoom.jlgui.basicplayer.BasicPlayer;
 import java.io.File;
 import java.util.ArrayList;
 
-enum State  {
-    PLAYING,
-    PAUSED,
-    IDLE
-}
 public class Player {
     private BasicPlayer basePlayer;
     private State state;
     private Song currentSong;
-    private Integer timestamp;
+    private static Player player;
     private Library library;
 
 
-    public Player() {
+    private Player() {
         state = State.IDLE;
         basePlayer = new BasicPlayer();
-        library = new Library();
+        library = Library.getLibrary();
+    }
+
+    public static Player getPlayer()   {
+        if (player == null) {
+            player = new Player();
+        }
+        return player;
     }
 
     public void play(Song song)  {
@@ -130,16 +132,15 @@ public class Player {
         }
     }
 
-    public void restart() {
-        Song current = currentSong;
-        play(current);
-    }
-
     public State getState() {
         return state;
     }
 
     public Library getLibrary() {
         return library;
+    }
+
+    public Song getCurrentSong() {
+        return currentSong;
     }
 }
