@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import views.PlayerView;
 
 public class PlayerController {
+	private static PlayerView playerView = PlayerView.getPlayerView();
 	private static Player player = Player.getPlayer();
 
 	public static class buttonListener implements ActionListener {
@@ -43,12 +44,9 @@ public class PlayerController {
 		}
 	};
 	
-	//change to instanciate when there's time
-	public static PlayerView pv = null;
-	
 	protected static void play() {
 		System.out.println("Play button pressed.");
-		pv.setPause();
+		playerView.setPause();
 
 		Integer row = PlayerView.getRow();
 		Song selectedSong = player.getLibrary().getSongs().get(row);
@@ -66,7 +64,7 @@ public class PlayerController {
 
 	protected static void pause() {
 		System.out.println("Pause button pressed.");
-		pv.setPlay();
+		playerView.setPlay();
 		player.pause();
 	}
 
@@ -86,6 +84,11 @@ public class PlayerController {
 		System.out.println("Add button pressed.");
 	}
 	protected static void remove() {
+		Integer row = PlayerView.getRow();
+		Song selectedSong = player.getLibrary().getSongs().get(row);
+
+		LibraryController.remove(selectedSong,row);
+		playerView.repaint();
 		System.out.println("Remove button pressed.");
 	}
 }

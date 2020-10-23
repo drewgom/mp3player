@@ -10,6 +10,10 @@ import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.awt.FlowLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -24,10 +28,18 @@ public class PlayerView{
 	private ActionListener playerListener = new PlayerController.buttonListener();
 	private LibraryController libraryController = new LibraryController();
 	public static Integer row = null;
+	private static PlayerView playerView;
 	
 	private JButton [] playBackButtons = new JButton[5];
-	
-	public PlayerView(){
+
+	public static PlayerView getPlayerView()	{
+		if (playerView == null)	{
+			playerView = new PlayerView();
+		}
+
+		return playerView;
+	}
+	private PlayerView()	{
 		this.mainWindow = new JFrame(title + " - Now Playing: Nothing");
 		mainWindow.setMinimumSize(new Dimension(480, 400));
 		mainWindow.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Svona\\Desktop\\Git\\mp3player\\res\\window-icon.png"));
@@ -41,7 +53,8 @@ public class PlayerView{
 		JPanel Interface = new JPanel();
 		mainWindow.getContentPane().add(Interface, BorderLayout.EAST);
 
-		LibraryTable = new JTable(libraryController.getTableObjects(), libraryController.getTableColumnNames());
+		LibraryTable = new JTable();
+		LibraryTable.setModel(libraryController.getTableModelOfData());
 		LibraryTable.setPreferredSize(new Dimension(500, 200));
 		LibraryTable.setFillsViewportHeight(true);
 
@@ -137,7 +150,7 @@ public class PlayerView{
 		SongControls.add(VolumeSlider, BorderLayout.EAST);
 		
 		this.mainWindow.pack();
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		mainWindow.setJMenuBar(menuBar);
 		
@@ -225,5 +238,15 @@ public class PlayerView{
 
 	public static Integer getRow()	{
 		return row;
+	}
+
+	public static void display()	{
+		playerView.mainWindow.setVisible(true);
+	}
+
+	public void repaint()	{
+		//DefaultTableModel model = (DefaultTableModel) LibraryTable.getModel();
+		//model.fireTableDataChanged();
+		//LibraryTable.repaint();
 	}
 }
