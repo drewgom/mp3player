@@ -4,27 +4,24 @@ import javax.swing.*;
 
 import controllers.PlayerController;
 
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 
 public class PlayerView{
 	private JFrame mainWindow = null;
 	private String title = "Austin & Drew's MP3 Player";
-	private JTable Librarytable = null;
-	private JTable LibraryTable;
+	private JTable LibraryTable = null;
+	private JPanel PlayPauseFlip = null;
+	private CardLayout PlayPauseCard = null;
 	private ActionListener listener = new PlayerController.buttonListener();
+	
+	private JButton [] playBackButtons = new JButton[5];
 	
 	public PlayerView(){
 		this.mainWindow = new JFrame(title + " - Now Playing: Nothing");
@@ -62,53 +59,68 @@ public class PlayerView{
 		Remove.setPreferredSize(new Dimension(50, 50));
 		Remove.setIcon(iconDownscale(new ImageIcon("res/minus-button.png")));
 		LibraryControls.add(Remove);
-		
-		JPanel PlaybackControls = new JPanel();
-		
-		JButton SkipBack = new JButton();
-		SkipBack.setAlignmentX(Component.CENTER_ALIGNMENT);
-		SkipBack.addActionListener(this.listener);
-		SkipBack.setActionCommand("skipBack");
-		SkipBack.setPreferredSize(new Dimension(50, 50));
-		SkipBack.setIcon(iconDownscale(new ImageIcon("res/previous-button.png")));
-		
-		JButton Rewind = new JButton();
-		Rewind.setAlignmentX(Component.CENTER_ALIGNMENT);
-		Rewind.addActionListener(this.listener);
-		Rewind.setActionCommand("rewind");
-		Rewind.setPreferredSize(new Dimension(50, 50));
-		Rewind.setIcon(iconDownscale(new ImageIcon("res/rewind-button.png")));
-		
-		JButton PlayPause = new JButton();
-		PlayPause.setAlignmentX(Component.CENTER_ALIGNMENT);
-		PlayPause.addActionListener(this.listener);
-		PlayPause.setActionCommand("play");
-		PlayPause.setPreferredSize(new Dimension(50, 50));
-		PlayPause.setIcon(iconDownscale(new ImageIcon("res/play-button.png")));
-		
-		JButton FastForward = new JButton();
-		FastForward.setAlignmentX(Component.CENTER_ALIGNMENT);
-		FastForward.addActionListener(this.listener);
-		FastForward.setActionCommand("fastForward");
-		FastForward.setPreferredSize(new Dimension(50, 50));
-		FastForward.setIcon(iconDownscale(new ImageIcon("res/fast-forward-button.png")));
-		
-		JButton SkipForward = new JButton();
-		SkipForward.setAlignmentX(Component.CENTER_ALIGNMENT);
-		SkipForward.addActionListener(this.listener);
-		SkipForward.setActionCommand("skipForward");
-		SkipForward.setPreferredSize(new Dimension(50, 50));
-		SkipForward.setIcon(iconDownscale(new ImageIcon("res/next-button.png")));
-		PlaybackControls.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		PlaybackControls.add(SkipBack);
-		PlaybackControls.add(Rewind);
-		PlaybackControls.add(PlayPause);
-		PlaybackControls.add(FastForward);
-		PlaybackControls.add(SkipForward);
 		Interface.setLayout(new BorderLayout(0, 0));
 		Interface.add(LibraryTable, BorderLayout.CENTER);
 		Interface.add(LibraryControls, BorderLayout.NORTH);
-		Interface.add(PlaybackControls, BorderLayout.SOUTH);
+		
+		JPanel SongControls = new JPanel();
+		Interface.add(SongControls, BorderLayout.SOUTH);
+		SongControls.setLayout(new BorderLayout(0, 0));
+		
+		JPanel PlaybackControls = new JPanel();
+		SongControls.add(PlaybackControls, BorderLayout.CENTER);
+		PlaybackControls.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		JButton SkipBackButton = new JButton();
+		SkipBackButton.setIcon(iconDownscale(new ImageIcon("res/previous-button.png")));
+		SkipBackButton.setPreferredSize(new Dimension(50, 50));
+		SkipBackButton.setAlignmentX(0.5f);
+		SkipBackButton.setActionCommand("skipBack");
+		SkipBackButton.addActionListener(this.listener);
+		PlaybackControls.add(SkipBackButton);
+		
+		PlayPauseFlip = new JPanel();
+		PlayPauseFlip.setPreferredSize(new Dimension(50, 50));
+		PlaybackControls.add(PlayPauseFlip);
+		PlayPauseCard = new CardLayout(0, 0);
+		PlayPauseFlip.setLayout(PlayPauseCard);
+		
+		JButton PlayButton = new JButton();
+		PlayButton.setIcon(iconDownscale(new ImageIcon("res/play-button.png")));
+		PlayButton.setPreferredSize(new Dimension(50, 50));
+		PlayButton.setAlignmentX(0.5f);
+		PlayButton.setActionCommand("play");
+		PlayButton.addActionListener(this.listener);
+		PlayPauseFlip.add(PlayButton, "play");
+		
+		JButton PauseButton = new JButton();
+		PauseButton.setIcon(iconDownscale(new ImageIcon("res/pause-button.png")));
+		PauseButton.setPreferredSize(new Dimension(50, 50));
+		PauseButton.setAlignmentX(0.5f);
+		PauseButton.setActionCommand("pause");
+		PauseButton.addActionListener(this.listener);
+		PlayPauseFlip.add(PauseButton, "pause");
+		
+		JButton StopButton = new JButton();
+		StopButton.setIcon(iconDownscale(new ImageIcon("res/stop-button.png")));
+		StopButton.setPreferredSize(new Dimension(50, 50));
+		StopButton.setAlignmentX(0.5f);
+		StopButton.setActionCommand("stop");
+		StopButton.addActionListener(this.listener);
+		PlaybackControls.add(StopButton);
+		
+		JButton SkipForwardButton = new JButton();
+		SkipForwardButton.setIcon(iconDownscale(new ImageIcon("res/next-button.png")));
+		SkipForwardButton.setPreferredSize(new Dimension(50, 50));
+		SkipForwardButton.setAlignmentX(0.5f);
+		SkipForwardButton.setActionCommand("skipForward");
+		SkipForwardButton.addActionListener(this.listener);
+		PlaybackControls.add(SkipForwardButton);
+		
+		JSlider VolumeSlider = new JSlider();
+		VolumeSlider.setPreferredSize(new Dimension(20, 60));
+		VolumeSlider.setOrientation(SwingConstants.VERTICAL);
+		SongControls.add(VolumeSlider, BorderLayout.EAST);
 		
 		this.mainWindow.pack();
 		
@@ -128,15 +140,10 @@ public class PlayerView{
 		menuPause.setActionCommand("pause");
 		PlaybackMenu.add(menuPause);
 		
-		JMenuItem menuFastForward = new JMenuItem("Fast Forward");
-		menuFastForward.addActionListener(this.listener);
-		menuFastForward.setActionCommand("fastForward");
-		PlaybackMenu.add(menuFastForward);
-		
-		JMenuItem menuRewind = new JMenuItem("Rewind");
-		menuRewind.addActionListener(this.listener);
-		menuRewind.setActionCommand("rewind");
-		PlaybackMenu.add(menuRewind);
+		JMenuItem menuStop = new JMenuItem("Stop");
+		menuStop.addActionListener(this.listener);
+		menuStop.setActionCommand("stop");
+		PlaybackMenu.add(menuStop);
 		
 		JMenuItem menuSkipForward = new JMenuItem("Skip Forward");
 		menuSkipForward.addActionListener(this.listener);
@@ -163,7 +170,39 @@ public class PlayerView{
 		
 		JMenu OptionsMenu = new JMenu("Options");
 		menuBar.add(OptionsMenu);
+		
+		this.playBackButtons[0] = SkipBackButton;
+		this.playBackButtons[1] = SkipForwardButton;
+		this.playBackButtons[2] = StopButton;
+		this.playBackButtons[3] = PauseButton;
+		this.playBackButtons[4] = PlayButton;
+		
+		JSlider Timebar = new JSlider();
+		Timebar.setValue(0);
+		Timebar.setPaintLabels(true);
+		SongControls.add(Timebar, BorderLayout.NORTH);
+		
 		this.mainWindow.setVisible(true);
+	}
+	
+	public void setPause() {
+		this.PlayPauseCard.last(PlayPauseFlip);
+	}
+	
+	public void setPlay() {
+		this.PlayPauseCard.first(PlayPauseFlip);
+	}
+	
+	public void setGray() {
+		for(int i = 0; i < 5; i++) {
+			this.playBackButtons[i].setEnabled(false);
+		}
+	}
+	
+	public void setNormal() {
+		for(int i = 0; i < 5; i++) {
+			this.playBackButtons[i].setEnabled(true);
+		}
 	}
 	
 	private static ImageIcon iconDownscale(ImageIcon imageIcon) {
