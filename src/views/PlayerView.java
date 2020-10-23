@@ -21,7 +21,7 @@ public class PlayerView{
 	private CardLayout PlayPauseCard = null;
 	private ActionListener listener = new PlayerController.buttonListener();
 	
-	private JButton [] playBackButtons = new JButton[6];
+	private JButton [] playBackButtons = new JButton[5];
 	
 	public PlayerView(){
 		this.mainWindow = new JFrame(title + " - Now Playing: Nothing");
@@ -68,7 +68,7 @@ public class PlayerView{
 		SongControls.setLayout(new BorderLayout(0, 0));
 		
 		JPanel PlaybackControls = new JPanel();
-		SongControls.add(PlaybackControls, BorderLayout.SOUTH);
+		SongControls.add(PlaybackControls, BorderLayout.CENTER);
 		PlaybackControls.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton SkipBackButton = new JButton();
@@ -78,14 +78,6 @@ public class PlayerView{
 		SkipBackButton.setActionCommand("skipBack");
 		SkipBackButton.addActionListener(this.listener);
 		PlaybackControls.add(SkipBackButton);
-		
-		JButton RewindButton = new JButton();
-		RewindButton.setIcon(iconDownscale(new ImageIcon("res/rewind-button.png")));
-		RewindButton.setPreferredSize(new Dimension(50, 50));
-		RewindButton.setAlignmentX(0.5f);
-		RewindButton.setActionCommand("rewind");
-		RewindButton.addActionListener(this.listener);
-		PlaybackControls.add(RewindButton);
 		
 		PlayPauseFlip = new JPanel();
 		PlayPauseFlip.setPreferredSize(new Dimension(50, 50));
@@ -109,13 +101,13 @@ public class PlayerView{
 		PauseButton.addActionListener(this.listener);
 		PlayPauseFlip.add(PauseButton, "pause");
 		
-		JButton FastForwardButton = new JButton();
-		FastForwardButton.setIcon(iconDownscale(new ImageIcon("res/fast-forward-button.png")));
-		FastForwardButton.setPreferredSize(new Dimension(50, 50));
-		FastForwardButton.setAlignmentX(0.5f);
-		FastForwardButton.setActionCommand("fastForward");
-		FastForwardButton.addActionListener(this.listener);
-		PlaybackControls.add(FastForwardButton);
+		JButton StopButton = new JButton();
+		StopButton.setIcon(iconDownscale(new ImageIcon("res/stop-button.png")));
+		StopButton.setPreferredSize(new Dimension(50, 50));
+		StopButton.setAlignmentX(0.5f);
+		StopButton.setActionCommand("stop");
+		StopButton.addActionListener(this.listener);
+		PlaybackControls.add(StopButton);
 		
 		JButton SkipForwardButton = new JButton();
 		SkipForwardButton.setIcon(iconDownscale(new ImageIcon("res/next-button.png")));
@@ -126,7 +118,9 @@ public class PlayerView{
 		PlaybackControls.add(SkipForwardButton);
 		
 		JSlider VolumeSlider = new JSlider();
-		SongControls.add(VolumeSlider, BorderLayout.NORTH);
+		VolumeSlider.setPreferredSize(new Dimension(20, 60));
+		VolumeSlider.setOrientation(SwingConstants.VERTICAL);
+		SongControls.add(VolumeSlider, BorderLayout.EAST);
 		
 		this.mainWindow.pack();
 		
@@ -146,15 +140,10 @@ public class PlayerView{
 		menuPause.setActionCommand("pause");
 		PlaybackMenu.add(menuPause);
 		
-		JMenuItem menuFastForward = new JMenuItem("Fast Forward");
-		menuFastForward.addActionListener(this.listener);
-		menuFastForward.setActionCommand("fastForward");
-		PlaybackMenu.add(menuFastForward);
-		
-		JMenuItem menuRewind = new JMenuItem("Rewind");
-		menuRewind.addActionListener(this.listener);
-		menuRewind.setActionCommand("rewind");
-		PlaybackMenu.add(menuRewind);
+		JMenuItem menuStop = new JMenuItem("Stop");
+		menuStop.addActionListener(this.listener);
+		menuStop.setActionCommand("stop");
+		PlaybackMenu.add(menuStop);
 		
 		JMenuItem menuSkipForward = new JMenuItem("Skip Forward");
 		menuSkipForward.addActionListener(this.listener);
@@ -184,10 +173,14 @@ public class PlayerView{
 		
 		this.playBackButtons[0] = SkipBackButton;
 		this.playBackButtons[1] = SkipForwardButton;
-		this.playBackButtons[2] = RewindButton;
-		this.playBackButtons[3] = FastForwardButton;
-		this.playBackButtons[4] = PauseButton;
-		this.playBackButtons[5] = PlayButton;
+		this.playBackButtons[2] = StopButton;
+		this.playBackButtons[3] = PauseButton;
+		this.playBackButtons[4] = PlayButton;
+		
+		JSlider Timebar = new JSlider();
+		Timebar.setValue(0);
+		Timebar.setPaintLabels(true);
+		SongControls.add(Timebar, BorderLayout.NORTH);
 		
 		this.mainWindow.setVisible(true);
 	}
@@ -201,13 +194,13 @@ public class PlayerView{
 	}
 	
 	public void setGray() {
-		for(int i = 0; i < 6; i++) {
+		for(int i = 0; i < 5; i++) {
 			this.playBackButtons[i].setEnabled(false);
 		}
 	}
 	
 	public void setNormal() {
-		for(int i = 0; i < 6; i++) {
+		for(int i = 0; i < 5; i++) {
 			this.playBackButtons[i].setEnabled(true);
 		}
 	}

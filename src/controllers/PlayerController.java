@@ -17,11 +17,8 @@ public class PlayerController {
 				case "pause":
 					pause();
 					break;
-				case "fastForward":
-					fastForward();
-					break;
-				case "rewind":
-					rewind();
+				case "stop":
+					stop();
 					break;
 				case "skipForward":
 					skipForward();
@@ -50,11 +47,9 @@ public class PlayerController {
 		System.out.println("Pause button pressed.");
 		pv.setPlay();
 	}
-	protected static void fastForward() {
-		System.out.println("Fast forward button pressed.");
-	}
-	protected static void rewind() {
-		System.out.println("Rewind button pressed.");
+	protected static void stop() {
+		System.out.println("Stop button pressed.");
+		pv.setPlay();
 	}
 	protected static void skipForward() {
 		System.out.println("Skip forward button pressed.");
