@@ -10,6 +10,8 @@ public class Main {
 
     public static void main(String[] args) {
         PlayerView view = PlayerView.getPlayerView();
+    	
+    	view.setNowPlaying("test text");
         view.display();
     }
 }

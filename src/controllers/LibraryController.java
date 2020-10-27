@@ -21,19 +21,23 @@ public class LibraryController {
 
     protected static void add(String path) {
         lib.addSongToLibrary(path);
+        PlayerView playerView = PlayerView.getPlayerView();
+        playerView.repaint();
         System.out.println("Add button pressed.");
     }
     protected static void remove(Song song, Integer rowNumber) {
         lib.deleteSongFromLibrary(song);
-        tableModel.removeRow(rowNumber);
+        // tableModel.removeRow(rowNumber);
+        PlayerView playerView = PlayerView.getPlayerView();
+        playerView.repaint();
         System.out.println("Remove button pressed.");
     }
 
-    public Object[] getTableColumnNames()    {
+    public static Object[] getTableColumnNames()    {
         return new String[]{"Title", "Artist", "Genre", "Year", "Comment"};
     }
 
-    public DefaultTableModel getTableModelOfData()    {
+    public static DefaultTableModel getTableModelOfData()    {
         tableModel = new DefaultTableModel();
         tableModel.setColumnIdentifiers(getTableColumnNames());
 
