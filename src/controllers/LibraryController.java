@@ -1,6 +1,6 @@
 package controllers;
 
-import models.Artist;
+
 import models.Library;
 import models.Player;
 import models.Song;
@@ -8,6 +8,7 @@ import views.PlayerView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,66 +29,28 @@ public class LibraryController {
         System.out.println("Remove button pressed.");
     }
 
-    public Object[][] getTableObjects()    {
-        Integer numDataFields = getTableColumnNames().length;
-        Integer songCount = lib.getSongs().size();
-        Object[][] data = new Object[songCount][numDataFields];
-        ArrayList<Song> songs = lib.getSongs();
-
-        for (int i = 0; i < songCount; i++) {
-            Object[] currentSongData = new Object[numDataFields];
-            Song currentSong = songs.get(i);
-            String artistList = "";
-            ArrayList<Artist> artistObjects = currentSong.getArtists();
-            for (int j = 0; j < artistObjects.size(); j++) {
-                artistList = artistList + artistObjects.get(j).getName();
-                if (j != artistObjects.size()-1)    {
-                    artistList = artistList + ", ";
-                }
-            }
-            currentSongData[0] = currentSong.getTitle();
-            currentSongData[1] = currentSong.getLength();
-            currentSongData[2] = currentSong.getGenre();
-            currentSongData[3] = currentSong.getAlbum();
-            currentSongData[4] = artistList;
-
-            data[i] = currentSongData;
-        }
-
-        return data;
-    }
-
     public Object[] getTableColumnNames()    {
-        return new String[]{"Title", "Length", "Genre", "Album", "Artist"};
+        return new String[]{"Title", "Artist", "Genre", "Year", "Comment"};
     }
 
     public DefaultTableModel getTableModelOfData()    {
-        if (tableModel == null) {
-            tableModel = new DefaultTableModel();
-            tableModel.setColumnIdentifiers(getTableColumnNames());
+        tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(getTableColumnNames());
 
-            ArrayList<Song> songs = lib.getSongs();
+        ArrayList<Song> songs = lib.getSongs();
 
-            for (int i = 0; i < songs.size(); i++) {
-                Object[] currentSongData = new Object[getTableColumnNames().length];
-                Song currentSong = songs.get(i);
-                String artistList = "";
-                ArrayList<Artist> artistObjects = currentSong.getArtists();
-                for (int j = 0; j < artistObjects.size(); j++) {
-                    artistList = artistList + artistObjects.get(j).getName();
-                    if (j != artistObjects.size()-1)    {
-                        artistList = artistList + ", ";
-                    }
-                }
-                currentSongData[0] = currentSong.getTitle();
-                currentSongData[1] = currentSong.getLength();
-                currentSongData[2] = currentSong.getGenre();
-                currentSongData[3] = currentSong.getAlbum();
-                currentSongData[4] = artistList;
+        for (int i = 0; i < songs.size(); i++) {
+            Object[] currentSongData = new Object[getTableColumnNames().length];
+            Song currentSong = songs.get(i);
+            currentSongData[0] = currentSong.getTitle();
+            currentSongData[1] = currentSong.getArtists();
+            currentSongData[2] = currentSong.getGenre();
+            currentSongData[3] = currentSong.getYear();
+            currentSongData[4] = currentSong.getComments();
 
-                tableModel.addRow(currentSongData);
-            }
+            tableModel.addRow(currentSongData);
         }
-        return new DefaultTableModel(getTableObjects(),getTableColumnNames());
+
+        return tableModel;
     }
 }

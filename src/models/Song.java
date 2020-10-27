@@ -6,10 +6,10 @@ public class Song implements Comparable<Song>{
     private Integer pk;
     private String title;
     private String genre;
+    private String artists;
     private String album;
     private String year;
     private String comments;
-    private ArrayList<Artist> artists;
     private String path;
 
     public Song(Integer pk,
@@ -18,7 +18,7 @@ public class Song implements Comparable<Song>{
                 String album,
                 String year,
                 String comments,
-                ArrayList<Artist> artists,
+                String artists,
                 String path
     ) {
          this.pk = pk;
@@ -43,7 +43,7 @@ public class Song implements Comparable<Song>{
         return pk;
     }
 
-    public ArrayList<Artist> getArtists() {
+    public String getArtists() {
         return artists;
     }
 

@@ -245,8 +245,8 @@ public class PlayerView{
 	}
 
 	public void repaint()	{
-		//DefaultTableModel model = (DefaultTableModel) LibraryTable.getModel();
-		//model.fireTableDataChanged();
-		//LibraryTable.repaint();
+		DefaultTableModel model = (DefaultTableModel) LibraryTable.getModel();
+		model.fireTableDataChanged();
+		LibraryTable.repaint();
 	}
 }

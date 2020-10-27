@@ -6,9 +6,7 @@ import com.mpatric.mp3agic.Mp3File;
 import utils.PlayerDB;
 
 import javax.swing.text.StyledEditorKit;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,18 +31,35 @@ public class Library {
     }
 
     public void loadSongsFromDB()   {
-        //PlayerDB db = PlayerDB.getDb();
-        //Connection connection = db.connect();
-        // Uses the database connection to query the database for the columns in 'Song' on the song DB table
+        try {
+            PlayerDB db = PlayerDB.getDb();
+            Connection connection = db.connect();
 
-        // Iterates over the result set, and turns each entry in to a song by getting the artist and then making the song object
+            PreparedStatement newSongInsertStatement = connection.prepareStatement("select id, title, album, yr, comments, genre, pth, artist from song order by title desc");
+            ResultSet outcome = newSongInsertStatement.executeQuery();
 
-        // replaces the 'songs' array list with the new array list
+            songs = new ArrayList<Song>();
 
-        // sort the array list alphabetically by title
-        //db.close();
-        songs = new ArrayList<Song>();
-        Collections.sort(songs);
+            while (outcome.next())  {
+                songs.add( new Song(
+                        outcome.getInt("id"),
+                        outcome.getString("title"),
+                        outcome.getString("genre"),
+                        outcome.getString("album"),
+                        outcome.getString("yr"),
+                        outcome.getString("comments"),
+                        outcome.getString("artist"),
+                        outcome.getString("pth")
+                    )
+                );
+            }
+        } catch (Exception e)   {
+            System.out.println("An error occurred");
+            System.out.println(e.getMessage());
+        } finally   {
+            PlayerDB db = PlayerDB.getDb();
+            db.close();
+        }
     }
 
     public void addSongToLibrary(String path)  {
@@ -58,78 +73,51 @@ public class Library {
             // get the metadata from the song's tags
             if (newSong.hasId3v2Tag()) {
                 ID3v2 id3v2Tag = newSong.getId3v2Tag();
-                Integer songPk;
-                ArrayList<Integer> artistPks = new ArrayList<>();
-                // create the artist if needed
-
-                PreparedStatement checkArtistStatement = connection.prepareStatement("select id, name from artist where name in ?;");
-                checkArtistStatement.setString(1, id3v2Tag.getArtist());
-                ResultSet artistsFromDB = checkArtistStatement.executeQuery();
-
-                while (artistsFromDB.next())   {
-                    artistPks.add(artistsFromDB.getInt("id"));
-                }
-
-                for(String name : new ArrayList<>(Arrays.asList(id3v2Tag.getArtist().split(","))))  {
-                    Boolean shouldBeAdded = true;
-                    while (artistsFromDB.next())   {
-                        if (artistsFromDB.getString("name") == name)    {
-                            shouldBeAdded = false;
-                        }
-                    }
-
-                    if (shouldBeAdded)  {
-                        PreparedStatement newArtistInsertStatement = connection.prepareStatement("insert into artist(name) values (?);");
-                        newArtistInsertStatement.setString(1, name);
-                        ResultSet outcome = newArtistInsertStatement.executeQuery();
-                        artistPks.add(outcome.getInt("id"));
-                    }
-                }
 
                 // create the song if needed
-                PreparedStatement newSongInsertStatement = connection.prepareStatement("insert into song(title, album, yr, comments, genre, pth) values (?,?,?,?,?,?);");
+                PreparedStatement newSongInsertStatement = connection.prepareStatement("insert into song(title, album, yr, comments, genre, pth, artist) values (?,?,?,?,?,?,?)");
                 newSongInsertStatement.setString(1,id3v2Tag.getTitle());
                 newSongInsertStatement.setString(2,id3v2Tag.getAlbum());
-                newSongInsertStatement.setString(3,id3v2Tag.getYear());
+                newSongInsertStatement.setString(3,id3v2Tag.getDate());
                 newSongInsertStatement.setString(4,id3v2Tag.getComment());
                 newSongInsertStatement.setString(5,id3v2Tag.getGenreDescription());
                 newSongInsertStatement.setString(6,path);
-
-                ResultSet outcome = newSongInsertStatement.executeQuery();
-                songPk = outcome.getInt("id");
-
-                // add to the song_artist DB table
-                for (Integer artist : artistPks)    {
-                    PreparedStatement newSongArtistInsertStatement = connection.prepareStatement("insert into song_artist(song_pk, artist_pk) values (?,?);");
-                    newSongArtistInsertStatement.setInt(1, songPk);
-                    newSongArtistInsertStatement.setInt(2, artist);
-                    newSongArtistInsertStatement.executeQuery();
-                }
-                db.close();
-                loadSongsFromDB();
+                newSongInsertStatement.setString(7,id3v2Tag.getArtist());
+                newSongInsertStatement.executeUpdate();
             } else {
                 throw new InvalidDataException("The mp3 that was loaded is not tagged");
             }
+        } catch(SQLIntegrityConstraintViolationException e)   {
+            System.out.println("Song already added");
         } catch (Exception e) {
             // if the song cannot be added, throw the corresponding exception
             System.out.println("Failed for some reason");
             System.out.println(e);
+        } finally   {
+            PlayerDB db = PlayerDB.getDb();
+            db.close();
+
+            loadSongsFromDB();
         }
     }
 
     public void deleteSongFromLibrary(Song song)  {
-        // query the DB to delete the song by primary key
+        try {
+            PlayerDB db = PlayerDB.getDb();
+            Connection connection = db.connect();
+            PreparedStatement deleteSongStatement = connection.prepareStatement("delete from song where id in (?)");
+            deleteSongStatement.setInt(1, song.getPk());
+            deleteSongStatement.executeUpdate();
 
-        // delete the song from the array list that has the songs stored
+        } catch (Exception e) {
+            System.out.println("Failed for some reason");
+            System.out.println(e);
+        } finally   {
+            PlayerDB db = PlayerDB.getDb();
+            db.close();
 
-        for (int i = 0; i < songs.size(); i++) {
-            if (songs.get(i).getPk() == song.getPk())   {
-                songs.remove(i);
-                i--;
-            }
+            loadSongsFromDB();
         }
-
-        // if the song cannot be deleted, throw the corresponding exception
     }
 
     public ArrayList<Song> getSongs() {
