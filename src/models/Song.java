@@ -5,28 +5,34 @@ import java.util.ArrayList;
 public class Song implements Comparable<Song>{
     private Integer pk;
     private String title;
-    private Long length;
     private String genre;
+    private String artists;
     private String album;
+    private String year;
+    private String comments;
     private String path;
-    private ArrayList<Artist> artists;
 
-    public Song(Integer pk, String title, Long length, String genre, String album, ArrayList<Artist> artists, String path) {
-        this.pk = pk;
-        this.title = title;
-        this.length = length;
-        this.genre = genre;
-        this.artists = artists;
-        this.album = album;
-        this.path = path;
+    public Song(Integer pk,
+                String title,
+                String genre,
+                String album,
+                String year,
+                String comments,
+                String artists,
+                String path
+    ) {
+         this.pk = pk;
+         this.title = title;
+         this.genre = genre;
+         this.album = album;
+         this.year = year;
+         this.comments = comments;
+         this.artists = artists;
+         this.path = path;
     }
 
     public String getGenre() {
         return genre;
-    }
-
-    public Long getLength() {
-        return length;
     }
 
     public String getTitle() {
@@ -37,12 +43,20 @@ public class Song implements Comparable<Song>{
         return pk;
     }
 
-    public ArrayList<Artist> getArtists() {
+    public String getArtists() {
         return artists;
     }
 
     public String getAlbum() {
         return album;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public String getComments() {
+        return comments;
     }
 
     public String getPath() {
@@ -56,6 +70,6 @@ public class Song implements Comparable<Song>{
 
     @Override
     public String toString() {
-        return "Title: " + title + " Length: " + length + " Genre: " + genre + " Artists: " + artists + " Album: " + album;
+        return "Title: " + title + " Genre: " + genre + " Artists: " + artists + " Album: " + album + " Year: " + year + " Comments: " + comments;
     }
 }

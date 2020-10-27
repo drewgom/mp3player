@@ -14,7 +14,8 @@ public class PlayerDB {
 
     private PlayerDB()  {
         PlayerDB.user = "root";
-        PlayerDB.pass = "root";
+        PlayerDB.pass = "1234";
+        PlayerDB.dbname = "mp3db";
     }
 
     public static PlayerDB getDb() {
@@ -27,11 +28,16 @@ public class PlayerDB {
 
     public Connection connect()    {
         try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+
             if (conn == null) {
-                conn = DriverManager.getConnection("jdbc:mysql://localhost/" + dbname, user, pass);
+                conn = DriverManager.getConnection("jdbc:derby://localhost:1527/" + dbname, user, pass);
             }
         } catch(SQLException e) {
             System.out.println("The mp3 player was unable to connect to the database.");
+            System.out.println(e.getMessage());
+        } catch(ClassNotFoundException e) {
+            System.out.println("Class not found");
             System.out.println(e.getMessage());
         }
         return conn;
