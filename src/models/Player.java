@@ -1,7 +1,9 @@
 package models;
 
 import javazoom.jlgui.basicplayer.BasicPlayer;
+import views.PlayerView;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 
