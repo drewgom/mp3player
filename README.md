@@ -23,7 +23,7 @@ Documents are stored [here](https://drive.google.com/drive/folders/1DOkwGmKIIz9K
 ## DB Setup
 ### Derby itself
 - Download NetBeans if you dont already have it
-- Follow the directions [here]() to get a DerbyDB set up locally
+- Follow the directions [here](https://web.csulb.edu/~mopkins/cecs323/netbeans.shtml) to get a DerbyDB set up locally
 	- user is 'root' and password is '1234'
 - Go to the 'Services' tab expand the 'Databases' field
 - Right click on your local DB and click 'Execute Command...'
