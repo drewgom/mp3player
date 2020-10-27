@@ -6,9 +6,17 @@ import models.Song;
 import models.State;
 import views.PlayerView;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import models.Song;
 import views.PlayerView;
 
 public class PlayerController {
@@ -43,7 +51,10 @@ public class PlayerController {
 			}
 		}
 	};
-	
+
+	//change to instantiate when there's time
+	public static PlayerView pv = null;
+
 	protected static void play() {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
@@ -82,6 +93,16 @@ public class PlayerController {
 	}
 	protected static void add() {
 		System.out.println("Add button pressed.");
+		
+		File newSong = pv.addPopup();
+		if(newSong != null) {
+			System.out.println("Selected file: "+newSong.getAbsolutePath());
+			//TODO Add to library.
+			//Can't write specifics since how you set things up hasn't been pushed to the git.
+		}
+		else {
+			System.out.println("Didn't select a file.");
+		}
 	}
 	protected static void remove() {
 		Integer row = PlayerView.getRow();
@@ -90,5 +111,52 @@ public class PlayerController {
 		LibraryController.remove(selectedSong,row);
 		playerView.repaint();
 		System.out.println("Remove button pressed.");
+	}
+	
+	public static class contextListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			switch(e.getActionCommand()) {
+				case "play":
+					playSelected();
+					break;
+				case "add":
+					add();
+					break;
+				case "remove":
+					removeSelected();
+					break;
+			}
+		}
+	}
+	
+	protected static void playSelected() {
+		int index = pv.getSelectedIndex();
+		System.out.println("Play selected song: Index "+Integer.toString(index)+".");
+	}
+
+	protected static void removeSelected() {
+		int index = pv.getSelectedIndex();
+		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
+	}
+	
+	public static class LibraryDrop extends DropTarget {
+		public void drop (DropTargetDropEvent evt) {
+			try {
+				evt.acceptDrop(DnDConstants.ACTION_COPY);
+				
+				//TODO Figure out what type this returns
+				List result = (List) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+				
+				for(Object o : result) {
+					System.out.println("Dropped file: "+o.toString());
+					//TODO Add to library.
+					//Can't write specifics since how you set things up hasn't been pushed to the git.
+				}
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 }
