@@ -14,7 +14,9 @@ create table song(
 	yr varchar(8) not null,
 	comments varchar(256),
 	genre varchar(32) not null,
-    constraint song_pk primary key (id)
+	pth varchar(512) not null,
+	constraint song_pk primary key (id),
+	constraint song_uk_1 unique (pth)
 );
 
 # Adding artist-song pairing table

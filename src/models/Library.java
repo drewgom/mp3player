@@ -3,7 +3,12 @@ package models;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
+import utils.PlayerDB;
 
+import javax.swing.text.StyledEditorKit;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,12 +17,10 @@ public class Library {
 
     private static ArrayList<Song> songs;
 
-    private static Integer pkcounter;
     private static Library lib;
 
     private Library()    {
         // Loads the library in from the database
-        pkcounter = 1;
         loadSongsFromDB();
     }
 
@@ -41,44 +44,69 @@ public class Library {
         // sort the array list alphabetically by title
         //db.close();
         songs = new ArrayList<Song>();
-        addSongToLibrary("default-songs/11.mp3");
-        addSongToLibrary("default-songs/21st_Century_Schizoid_Man.mp3");
-        addSongToLibrary("default-songs/Let_It_Be.mp3");
-        addSongToLibrary("default-songs/So_What.mp3");
+        Collections.sort(songs);
     }
 
     public void addSongToLibrary(String path)  {
         try {
             // try to add the song the DB
+            PlayerDB db = PlayerDB.getDb();
+            Connection connection = db.connect();
 
             // first, get the file from the path
             Mp3File newSong = new Mp3File(path);
             // get the metadata from the song's tags
             if (newSong.hasId3v2Tag()) {
                 ID3v2 id3v2Tag = newSong.getId3v2Tag();
-                ArrayList<String> artistName = new ArrayList<>(Arrays.asList(id3v2Tag.getArtist().split(",")));
-                String title = id3v2Tag.getTitle();
-                String album = id3v2Tag.getAlbum();
-                Long length = newSong.getLengthInSeconds();
-                String genre = id3v2Tag.getGenreDescription();
-
+                Integer songPk;
+                ArrayList<Integer> artistPks = new ArrayList<>();
                 // create the artist if needed
 
-                // create the song if needed
+                PreparedStatement checkArtistStatement = connection.prepareStatement("select id, name from artist where name in ?;");
+                checkArtistStatement.setString(1, id3v2Tag.getArtist());
+                ResultSet artistsFromDB = checkArtistStatement.executeQuery();
 
-                // create a song object out of the metadata, and add the song to the array list of songs
-
-
-                ArrayList<Artist> artists = new ArrayList<>();
-                for (int i = 0; i < artistName.size(); i++) {
-                    artists.add(new Artist(artistName.get(i)));
+                while (artistsFromDB.next())   {
+                    artistPks.add(artistsFromDB.getInt("id"));
                 }
 
-                Song song = new Song (pkcounter, title, length, genre, album, artists, path);
-                songs.add(song);
-                pkcounter++;
-                // sort the array list alphabetically by title
-                Collections.sort(songs);
+                for(String name : new ArrayList<>(Arrays.asList(id3v2Tag.getArtist().split(","))))  {
+                    Boolean shouldBeAdded = true;
+                    while (artistsFromDB.next())   {
+                        if (artistsFromDB.getString("name") == name)    {
+                            shouldBeAdded = false;
+                        }
+                    }
+
+                    if (shouldBeAdded)  {
+                        PreparedStatement newArtistInsertStatement = connection.prepareStatement("insert into artist(name) values (?);");
+                        newArtistInsertStatement.setString(1, name);
+                        ResultSet outcome = newArtistInsertStatement.executeQuery();
+                        artistPks.add(outcome.getInt("id"));
+                    }
+                }
+
+                // create the song if needed
+                PreparedStatement newSongInsertStatement = connection.prepareStatement("insert into song(title, album, yr, comments, genre, pth) values (?,?,?,?,?,?);");
+                newSongInsertStatement.setString(1,id3v2Tag.getTitle());
+                newSongInsertStatement.setString(2,id3v2Tag.getAlbum());
+                newSongInsertStatement.setString(3,id3v2Tag.getYear());
+                newSongInsertStatement.setString(4,id3v2Tag.getComment());
+                newSongInsertStatement.setString(5,id3v2Tag.getGenreDescription());
+                newSongInsertStatement.setString(6,path);
+
+                ResultSet outcome = newSongInsertStatement.executeQuery();
+                songPk = outcome.getInt("id");
+
+                // add to the song_artist DB table
+                for (Integer artist : artistPks)    {
+                    PreparedStatement newSongArtistInsertStatement = connection.prepareStatement("insert into song_artist(song_pk, artist_pk) values (?,?);");
+                    newSongArtistInsertStatement.setInt(1, songPk);
+                    newSongArtistInsertStatement.setInt(2, artist);
+                    newSongArtistInsertStatement.executeQuery();
+                }
+                db.close();
+                loadSongsFromDB();
             } else {
                 throw new InvalidDataException("The mp3 that was loaded is not tagged");
             }
