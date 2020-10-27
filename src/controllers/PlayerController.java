@@ -52,9 +52,6 @@ public class PlayerController {
 		}
 	};
 
-	//change to instantiate when there's time
-	public static PlayerView pv = null;
-
 	protected static void play() {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
@@ -94,10 +91,10 @@ public class PlayerController {
 	protected static void add() {
 		System.out.println("Add button pressed.");
 		
-		File newSong = pv.addPopup();
+		File newSong = playerView.addPopup();
 		if(newSong != null) {
 			System.out.println("Selected file: "+newSong.getAbsolutePath());
-			//TODO Add to library.
+			LibraryController.add(newSong.getAbsolutePath());
 			//Can't write specifics since how you set things up hasn't been pushed to the git.
 		}
 		else {
@@ -131,12 +128,12 @@ public class PlayerController {
 	}
 	
 	protected static void playSelected() {
-		int index = pv.getSelectedIndex();
+		int index = playerView.getSelectedIndex();
 		System.out.println("Play selected song: Index "+Integer.toString(index)+".");
 	}
 
 	protected static void removeSelected() {
-		int index = pv.getSelectedIndex();
+		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
 	}
 	
@@ -150,7 +147,7 @@ public class PlayerController {
 				
 				for(Object o : result) {
 					System.out.println("Dropped file: "+o.toString());
-					//TODO Add to library.
+					LibraryController.add(o.toString());
 					//Can't write specifics since how you set things up hasn't been pushed to the git.
 				}
 			}

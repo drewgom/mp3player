@@ -9,6 +9,7 @@ import javax.swing.table.TableModel;
 
 import controllers.LibraryController;
 import controllers.PlayerController;
+import models.Library;
 import models.Song;
 
 import java.awt.Image;
@@ -79,6 +80,15 @@ public class PlayerView{
 		LibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		LibraryTable.setRowSelectionAllowed(true);
 		LibraryTable.setShowVerticalLines(false);
+
+		MouseListener mouseListener = new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				row = LibraryTable.getSelectedRow();
+				System.out.println("Selected index = " + row);
+			}
+		};
+
+		LibraryTable.addMouseListener(mouseListener);
 
 		JPopupMenu LibraryContext = new JPopupMenu();
 
@@ -314,9 +324,8 @@ public class PlayerView{
 	}
 
 	public void repaint()	{
-		DefaultTableModel model = (DefaultTableModel) LibraryTable.getModel();
-		model.fireTableDataChanged();
-		LibraryTable.repaint();
+		DefaultTableModel model = LibraryController.getTableModelOfData();
+		LibraryTable.setModel(model);
 	}
 	
 	public int getSelectedIndex() {
