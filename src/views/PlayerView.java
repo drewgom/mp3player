@@ -327,7 +327,11 @@ public class PlayerView{
 		DefaultTableModel model = LibraryController.getTableModelOfData();
 		LibraryTable.setModel(model);
 	}
-	
+
+	public void refreshSelected(Integer newRow)	{
+		LibraryTable.setRowSelectionInterval(newRow,newRow);
+	}
+
 	public int getSelectedIndex() {
 		return LibraryTable.getSelectedRow();
 	}

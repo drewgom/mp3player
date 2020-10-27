@@ -19,6 +19,8 @@ import java.util.List;
 import models.Song;
 import views.PlayerView;
 
+import javax.swing.*;
+
 public class PlayerController {
 	private static PlayerView playerView = PlayerView.getPlayerView();
 	private static Player player = Player.getPlayer();
@@ -83,10 +85,16 @@ public class PlayerController {
 	protected static void skipForward() {
 		System.out.println("Skip forward button pressed.");
 		player.next();
+		Integer row = PlayerController.getIndexOfCurrentSong();
+		playerView.refreshSelected(row);
+		System.out.println("New row is " + row);
 	}
 	protected static void skipBack() {
 		System.out.println("Skip back button pressed.");
 		player.previous();
+		Integer row = PlayerController.getIndexOfCurrentSong();
+		playerView.refreshSelected(row);
+		System.out.println("New row is " + row);
 	}
 	protected static void add() {
 		System.out.println("Add button pressed.");
@@ -135,6 +143,18 @@ public class PlayerController {
 	protected static void removeSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
+	}
+
+	public static Integer getIndexOfCurrentSong()	{
+		ArrayList<Song> songs = Library.getLibrary().getSongs();
+		Song currSong = player.getCurrentSong();
+		Integer row = null;
+		for (int i = 0; i < songs.size(); i++)	{
+			if (currSong.getPk() == songs.get(i).getPk())	{
+				row = i;
+			}
+		}
+		return row;
 	}
 	
 	public static class LibraryDrop extends DropTarget {
