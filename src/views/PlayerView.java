@@ -107,6 +107,14 @@ public class PlayerView{
 		contextRemove.setActionCommand("remove");
 		LibraryContext.add(contextRemove);
 
+		LibraryTable.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton() == e.BUTTON3)
+					LibraryContext.show(LibraryTable , e.getX(), e.getY());
+			}
+		});
+
+
 		LibraryTable.add(LibraryContext);
 		LibraryTable.setDropTarget(new PlayerController.LibraryDrop());
 

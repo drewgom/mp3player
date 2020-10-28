@@ -138,11 +138,13 @@ public class PlayerController {
 	protected static void playSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Play selected song: Index "+Integer.toString(index)+".");
+		player.play(getSongFromIndex(index));
 	}
 
 	protected static void removeSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
+		LibraryController.remove(getSongFromIndex(index),index);
 	}
 
 	public static Integer getIndexOfCurrentSong()	{
@@ -155,6 +157,11 @@ public class PlayerController {
 			}
 		}
 		return row;
+	}
+
+	public static Song getSongFromIndex(Integer index)	{
+		ArrayList<Song> songs = Library.getLibrary().getSongs();
+		return songs.get(index);
 	}
 	
 	public static class LibraryDrop extends DropTarget {
