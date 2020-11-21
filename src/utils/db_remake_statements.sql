@@ -10,3 +10,16 @@ create table song(
 	constraint song_pk primary key (id),
 	constraint song_uk_1 unique (pth)
 );
+
+create table playlist(
+	id integer not null generated always as identity (start with 1, increment by 1),
+	nme varchar(64) not null,
+	constraint playlist_pk primary key (id),
+	constraint playlist_uk_1 unique (nme)
+);
+
+create table playlist_song(
+	playlist_id integer not null,
+	song_id integer not null,
+	constraint playlist_song_pk primary key (playlist_id, song_id)
+);
