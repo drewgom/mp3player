@@ -4,6 +4,7 @@ import models.Library;
 import models.Player;
 import models.Song;
 import models.State;
+import views.MainPlayerView;
 import views.PlayerView;
 
 import java.awt.datatransfer.DataFlavor;
@@ -17,43 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerController {
-	private static PlayerView playerView = PlayerView.getPlayerView();
-	private static Player player = Player.getPlayer();
+	private static PlayerView playerView;
+	private static Player player;
 
-	public static class buttonListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			switch (e.getActionCommand()) {
-				case "play":
-					play();
-					break;
-				case "pause":
-					pause();
-					break;
-				case "stop":
-					stop();
-					break;
-				case "skipForward":
-					skipForward();
-					break;
-				case "skipBack":
-					skipBack();
-					break;
-				case "add":
-					add();
-					break;
-				case "remove":
-					remove();
-					break;
-			}
-		}
-	};
+	public PlayerController(PlayerView playerView, Player player)	{
+		this.playerView = playerView;
+		this.player = player;
+	}
 
-	protected static void play() {
+	public static void play() {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
 
-		Integer row = PlayerView.getRow();
+		Integer row = MainPlayerView.getRow();
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		if (player.getState() == State.IDLE) {
@@ -67,31 +44,31 @@ public class PlayerController {
 		}
 	}
 
-	protected static void pause() {
+	public static void pause() {
 		System.out.println("Pause button pressed.");
 		playerView.setPlay();
 		player.pause();
 	}
 
-	protected static void stop() {
+	public static void stop() {
 		System.out.println("Stop button pressed.");
 		player.stop();
 	}
-	protected static void skipForward() {
+	public static void skipForward() {
 		System.out.println("Skip forward button pressed.");
 		player.next();
 		Integer row = PlayerController.getIndexOfCurrentSong();
 		playerView.refreshSelected(row);
 		System.out.println("New row is " + row);
 	}
-	protected static void skipBack() {
+	public static void skipBack() {
 		System.out.println("Skip back button pressed.");
 		player.previous();
 		Integer row = PlayerController.getIndexOfCurrentSong();
 		playerView.refreshSelected(row);
 		System.out.println("New row is " + row);
 	}
-	protected static void add() {
+	public static void addViaPopup() {
 		System.out.println("Add button pressed.");
 		
 		File newSong = playerView.addPopup();
@@ -104,8 +81,12 @@ public class PlayerController {
 			System.out.println("Didn't select a file.");
 		}
 	}
-	protected static void remove() {
-		Integer row = PlayerView.getRow();
+
+	public static void addViaPath(String path)	{
+		CollectionController.add(path);
+	}
+	public static void remove() {
+		Integer row = MainPlayerView.getRow();
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		CollectionController.remove(selectedSong,row);
@@ -113,30 +94,13 @@ public class PlayerController {
 		System.out.println("Remove button pressed.");
 	}
 	
-	public static class contextListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			switch(e.getActionCommand()) {
-				case "play":
-					playSelected();
-					break;
-				case "add":
-					add();
-					break;
-				case "remove":
-					removeSelected();
-					break;
-			}
-		}
-	}
-	
-	protected static void playSelected() {
+	public static void playSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Play selected song: Index "+Integer.toString(index)+".");
 		player.play(getSongFromIndex(index));
 	}
 
-	protected static void removeSelected() {
+	public static void removeSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
 		CollectionController.remove(getSongFromIndex(index),index);
@@ -157,25 +121,5 @@ public class PlayerController {
 	public static Song getSongFromIndex(Integer index)	{
 		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		return songs.get(index);
-	}
-	
-	public static class LibraryDrop extends DropTarget {
-		public void drop (DropTargetDropEvent evt) {
-			try {
-				evt.acceptDrop(DnDConstants.ACTION_COPY);
-				
-				//TODO Figure out what type this returns
-				List result = (List) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-				
-				for(Object o : result) {
-					System.out.println("Dropped file: "+o.toString());
-					CollectionController.add(o.toString());
-					//Can't write specifics since how you set things up hasn't been pushed to the git.
-				}
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
 	}
 }

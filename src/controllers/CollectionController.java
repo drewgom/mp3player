@@ -5,6 +5,7 @@ import models.Library;
 import models.Player;
 import models.Song;
 import models.SongCollection;
+import views.MainPlayerView;
 import views.PlayerView;
 
 import javax.swing.table.DefaultTableModel;
@@ -17,13 +18,13 @@ public class CollectionController {
 
     protected static void add(String path) {
         lib.addSongToCollection(path);
-        PlayerView playerView = PlayerView.getPlayerView();
+        PlayerView playerView = MainPlayerView.getPlayerView();
         playerView.repaint();
         System.out.println("Add button pressed.");
     }
     protected static void remove(Song song, Integer rowNumber) {
         lib.deleteSongFromCollection(song);
-        PlayerView playerView = PlayerView.getPlayerView();
+        PlayerView playerView = MainPlayerView.getPlayerView();
         playerView.repaint();
         System.out.println("Remove button pressed.");
     }
