@@ -4,7 +4,6 @@ import models.Library;
 import models.Player;
 import models.Song;
 import models.State;
-import views.MainPlayerView;
 import views.PlayerView;
 
 import java.awt.datatransfer.DataFlavor;
@@ -30,7 +29,8 @@ public class PlayerController {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
 
-		Integer row = MainPlayerView.getRow();
+		Integer row = playerView.getRow();
+		System.out.println("Row is" + row);
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		if (player.getState() == State.IDLE) {
@@ -84,9 +84,10 @@ public class PlayerController {
 
 	public static void addViaPath(String path)	{
 		CollectionController.add(path);
+		playerView.repaint();
 	}
 	public static void remove() {
-		Integer row = MainPlayerView.getRow();
+		Integer row = playerView.getRow();
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		CollectionController.remove(selectedSong,row);

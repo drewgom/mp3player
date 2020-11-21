@@ -14,4 +14,6 @@ public abstract class PlayerView {
     public abstract File addPopup();
 
     public abstract int getSelectedIndex();
+
+    public abstract Integer getRow();
 }

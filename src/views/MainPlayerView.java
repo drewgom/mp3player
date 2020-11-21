@@ -28,7 +28,6 @@ import java.util.List;
 public class MainPlayerView extends PlayerView{
 	private JFrame mainWindow = null;
 	private String title = "Austin & Drew's MP3 Player";
-	static private MainPlayerView playerView;
 
 	private JTable LibraryTable = null;
 	private JPanel PlayPauseFlip = null;
@@ -37,28 +36,21 @@ public class MainPlayerView extends PlayerView{
 	private ActionListener listener = new buttonListener();
 	private CollectionController collectionController = new CollectionController();
 	private ActionListener contextListener = new contextListener();
-	public static Integer row = null;
+	private Integer row = null;
 	private JLabel NowPlaying = null;
 
 	private JFrame confirmationWindow = null;
 
 	private JButton [] playBackButtons = new JButton[5];
 
-	public static MainPlayerView getPlayerView()	{
-		if (playerView == null)	{
-			playerView = new MainPlayerView();
-		}
-
-		return playerView;
-	}
-	private MainPlayerView()	{
+	public MainPlayerView(Player player)	{
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
 
-		controller = new PlayerController(this, Player.getPlayer());
+		controller = new PlayerController(this, player);
 
 		this.mainWindow = new JFrame(title + " - Now Playing: Nothing");
 		mainWindow.setMinimumSize(new Dimension(480, 400));
@@ -323,12 +315,12 @@ public class MainPlayerView extends PlayerView{
 		return new ImageIcon(imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
 	}
 
-	public static Integer getRow()	{
+	public Integer getRow()	{
 		return row;
 	}
 
-	public static void display()	{
-		playerView.mainWindow.setVisible(true);
+	public void display()	{
+		mainWindow.setVisible(true);
 	}
 
 	public void repaint()	{
