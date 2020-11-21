@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerController {
-	private static PlayerView playerView;
-	private static Player player;
+	private PlayerView playerView;
+	private Player player;
 
 	public PlayerController(PlayerView playerView, Player player)	{
 		this.playerView = playerView;
 		this.player = player;
 	}
 
-	public static void play() {
+	public void play() {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
 
@@ -42,31 +42,33 @@ public class PlayerController {
 		}
 	}
 
-	public static void pause() {
+	public void pause() {
 		System.out.println("Pause button pressed.");
 		playerView.setPlay();
 		player.pause();
 	}
 
-	public static void stop() {
+	public void stop() {
 		System.out.println("Stop button pressed.");
 		player.stop();
 	}
-	public static void skipForward() {
+
+	public void skipForward() {
 		System.out.println("Skip forward button pressed.");
 		player.next();
-		Integer row = PlayerController.getIndexOfCurrentSong();
+		Integer row = getIndexOfCurrentSong();
 		playerView.refreshSelected(row);
 		System.out.println("New row is " + row);
 	}
-	public static void skipBack() {
+
+	public void skipBack() {
 		System.out.println("Skip back button pressed.");
 		player.previous();
-		Integer row = PlayerController.getIndexOfCurrentSong();
+		Integer row = getIndexOfCurrentSong();
 		playerView.refreshSelected(row);
 		System.out.println("New row is " + row);
 	}
-	public static void addViaPopup() {
+	public void addViaPopup() {
 		System.out.println("Add button pressed.");
 		
 		File newSong = playerView.addPopup();
@@ -80,11 +82,11 @@ public class PlayerController {
 		}
 	}
 
-	public static void addViaPath(String path)	{
+	public void addViaPath(String path)	{
 		CollectionController.add(path);
 		playerView.repaint();
 	}
-	public static void remove() {
+	public void remove() {
 		Integer row = playerView.getRow();
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
@@ -93,19 +95,19 @@ public class PlayerController {
 		System.out.println("Remove button pressed.");
 	}
 	
-	public static void playSelected() {
+	public void playSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Play selected song: Index "+Integer.toString(index)+".");
 		player.play(getSongFromIndex(index));
 	}
 
-	public static void removeSelected() {
+	public void removeSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
 		CollectionController.remove(getSongFromIndex(index),index);
 	}
 
-	public static Integer getIndexOfCurrentSong()	{
+	public Integer getIndexOfCurrentSong()	{
 		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		Song currSong = player.getCurrentSong();
 		Integer row = null;
@@ -117,7 +119,7 @@ public class PlayerController {
 		return row;
 	}
 
-	public static Song getSongFromIndex(Integer index)	{
+	public Song getSongFromIndex(Integer index)	{
 		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		return songs.get(index);
 	}
