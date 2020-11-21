@@ -1,9 +1,6 @@
 package controllers;
 
-import models.Library;
-import models.Player;
-import models.Song;
-import models.State;
+import models.*;
 import views.PlayerView;
 
 import java.awt.datatransfer.DataFlavor;
@@ -31,6 +28,7 @@ public class PlayerController {
 
 		Integer row = playerView.getRow();
 		System.out.println("Row is" + row);
+
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		if (player.getState() == State.IDLE) {

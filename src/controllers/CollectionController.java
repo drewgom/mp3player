@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
 public class CollectionController {
-    private static Player player = Player.getPlayer();
+    private static Player player = new Player(Library.getLibrary());
     public static SongCollection lib = Library.getLibrary();
     public static DefaultTableModel tableModel;
 

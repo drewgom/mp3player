@@ -2,6 +2,7 @@ package views;
 
 import controllers.CollectionController;
 import controllers.PlayerController;
+import models.Library;
 import models.Player;
 
 import javax.swing.*;
@@ -51,7 +52,7 @@ public class PlaylistView extends PlayerView {
 
         title = "Library";
 
-        controller = new PlayerController(this, Player.getPlayer());
+        controller = new PlayerController(this, new Player(Library.getLibrary()));
 
         this.mainWindow = new JFrame(title + " - Now Playing: Nothing");
         mainWindow.setMinimumSize(new Dimension(480, 400));

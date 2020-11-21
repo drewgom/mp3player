@@ -9,21 +9,13 @@ public class Player {
     private BasicPlayer basePlayer;
     private State state;
     private Song currentSong;
-    private static Player player;
-    private Library library;
+    private SongCollection collection;
 
 
-    private Player() {
+    public Player(SongCollection collection) {
         state = State.IDLE;
         basePlayer = new BasicPlayer();
-        library = Library.getLibrary();
-    }
-
-    public static Player getPlayer()   {
-        if (player == null) {
-            player = new Player();
-        }
-        return player;
+        this.collection = collection;
     }
 
     public void play(Song song)  {
@@ -78,7 +70,7 @@ public class Player {
 
     public void next() {
         try {
-            ArrayList<Song> songs = library.getSongsInCollection();
+            ArrayList<Song> songs = collection.getSongsInCollection();
             Song newSong = null;
             if (currentSong == null) {
                 newSong = songs.get(0);
@@ -106,7 +98,7 @@ public class Player {
 
     public void previous() {
         try {
-            ArrayList<Song> songs = library.getSongsInCollection();
+            ArrayList<Song> songs = collection.getSongsInCollection();
             Song newSong = null;
             if (currentSong == null) {
                 newSong = songs.get(0);
@@ -136,8 +128,8 @@ public class Player {
         return state;
     }
 
-    public Library getCollection() {
-        return library;
+    public SongCollection getCollection() {
+        return collection;
     }
 
     public Song getCurrentSong() {
