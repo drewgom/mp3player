@@ -4,30 +4,25 @@ package controllers;
 import models.Library;
 import models.Player;
 import models.Song;
+import models.SongCollection;
 import views.PlayerView;
 
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class LibraryController {
+public class CollectionController {
     private static Player player = Player.getPlayer();
-    public static Library lib = Library.getLibrary();
+    public static SongCollection lib = Library.getLibrary();
     public static DefaultTableModel tableModel;
 
     protected static void add(String path) {
-        lib.addSongToLibrary(path);
+        lib.addSongToCollection(path);
         PlayerView playerView = PlayerView.getPlayerView();
         playerView.repaint();
         System.out.println("Add button pressed.");
     }
     protected static void remove(Song song, Integer rowNumber) {
-        lib.deleteSongFromLibrary(song);
-        // tableModel.removeRow(rowNumber);
+        lib.deleteSongFromCollection(song);
         PlayerView playerView = PlayerView.getPlayerView();
         playerView.repaint();
         System.out.println("Remove button pressed.");
@@ -41,7 +36,7 @@ public class LibraryController {
         tableModel = new DefaultTableModel();
         tableModel.setColumnIdentifiers(getTableColumnNames());
 
-        ArrayList<Song> songs = lib.getSongs();
+        ArrayList<Song> songs = lib.getSongsInCollection();
 
         for (int i = 0; i < songs.size(); i++) {
             Object[] currentSongData = new Object[getTableColumnNames().length];

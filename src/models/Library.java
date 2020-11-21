@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Library {
+public class Library extends SongCollection{
 
     private static ArrayList<Song> songs;
 
@@ -62,7 +62,7 @@ public class Library {
         }
     }
 
-    public void addSongToLibrary(String path)  {
+    public void addSongToCollection(String path)  {
         try {
             // try to add the song the DB
             PlayerDB db = PlayerDB.getDb();
@@ -101,7 +101,7 @@ public class Library {
         }
     }
 
-    public void deleteSongFromLibrary(Song song)  {
+    public void deleteSongFromCollection(Song song)  {
         try {
             PlayerDB db = PlayerDB.getDb();
             Connection connection = db.connect();
@@ -120,7 +120,7 @@ public class Library {
         }
     }
 
-    public ArrayList<Song> getSongs() {
+    public ArrayList<Song> getSongsInCollection() {
         return songs;
     }
 }

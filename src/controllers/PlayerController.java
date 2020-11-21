@@ -16,11 +16,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.Song;
-import views.PlayerView;
-
-import javax.swing.*;
-
 public class PlayerController {
 	private static PlayerView playerView = PlayerView.getPlayerView();
 	private static Player player = Player.getPlayer();
@@ -59,7 +54,7 @@ public class PlayerController {
 		playerView.setPause();
 
 		Integer row = PlayerView.getRow();
-		Song selectedSong = player.getLibrary().getSongs().get(row);
+		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		if (player.getState() == State.IDLE) {
 			System.out.println("Play button pressed and is idle");
@@ -102,7 +97,7 @@ public class PlayerController {
 		File newSong = playerView.addPopup();
 		if(newSong != null) {
 			System.out.println("Selected file: "+newSong.getAbsolutePath());
-			LibraryController.add(newSong.getAbsolutePath());
+			CollectionController.add(newSong.getAbsolutePath());
 			//Can't write specifics since how you set things up hasn't been pushed to the git.
 		}
 		else {
@@ -111,9 +106,9 @@ public class PlayerController {
 	}
 	protected static void remove() {
 		Integer row = PlayerView.getRow();
-		Song selectedSong = player.getLibrary().getSongs().get(row);
+		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
-		LibraryController.remove(selectedSong,row);
+		CollectionController.remove(selectedSong,row);
 		playerView.repaint();
 		System.out.println("Remove button pressed.");
 	}
@@ -144,11 +139,11 @@ public class PlayerController {
 	protected static void removeSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
-		LibraryController.remove(getSongFromIndex(index),index);
+		CollectionController.remove(getSongFromIndex(index),index);
 	}
 
 	public static Integer getIndexOfCurrentSong()	{
-		ArrayList<Song> songs = Library.getLibrary().getSongs();
+		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		Song currSong = player.getCurrentSong();
 		Integer row = null;
 		for (int i = 0; i < songs.size(); i++)	{
@@ -160,7 +155,7 @@ public class PlayerController {
 	}
 
 	public static Song getSongFromIndex(Integer index)	{
-		ArrayList<Song> songs = Library.getLibrary().getSongs();
+		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		return songs.get(index);
 	}
 	
@@ -174,7 +169,7 @@ public class PlayerController {
 				
 				for(Object o : result) {
 					System.out.println("Dropped file: "+o.toString());
-					LibraryController.add(o.toString());
+					CollectionController.add(o.toString());
 					//Can't write specifics since how you set things up hasn't been pushed to the git.
 				}
 			}

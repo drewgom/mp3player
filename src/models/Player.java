@@ -1,9 +1,7 @@
 package models;
 
 import javazoom.jlgui.basicplayer.BasicPlayer;
-import views.PlayerView;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -80,7 +78,7 @@ public class Player {
 
     public void next() {
         try {
-            ArrayList<Song> songs = library.getSongs();
+            ArrayList<Song> songs = library.getSongsInCollection();
             Song newSong = null;
             if (currentSong == null) {
                 newSong = songs.get(0);
@@ -108,7 +106,7 @@ public class Player {
 
     public void previous() {
         try {
-            ArrayList<Song> songs = library.getSongs();
+            ArrayList<Song> songs = library.getSongsInCollection();
             Song newSong = null;
             if (currentSong == null) {
                 newSong = songs.get(0);
@@ -138,7 +136,7 @@ public class Player {
         return state;
     }
 
-    public Library getLibrary() {
+    public Library getCollection() {
         return library;
     }
 

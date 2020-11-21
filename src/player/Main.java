@@ -4,7 +4,7 @@ import controllers.PlayerController;
 import javazoom.jlgui.basicplayer.BasicPlayer;
 import models.Library;
 import models.Player;
-import views.PlayerView;
+import views.PlayerView;        
 
 public class Main {
 

@@ -1,16 +1,11 @@
 package views;
 
-import javax.naming.LinkRef;
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
-import controllers.LibraryController;
+import controllers.CollectionController;
 import controllers.PlayerController;
-import models.Library;
-import models.Song;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -19,10 +14,6 @@ import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.awt.FlowLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -37,7 +28,7 @@ public class PlayerView{
 	private JPanel PlayPauseFlip = null;
 	private CardLayout PlayPauseCard = null;
 	private ActionListener listener = new PlayerController.buttonListener();
-	private LibraryController libraryController = new LibraryController();
+	private CollectionController collectionController = new CollectionController();
 	private ActionListener contextListener = new PlayerController.contextListener();
 	public static Integer row = null;
 	private JLabel NowPlaying = null;
@@ -74,7 +65,7 @@ public class PlayerView{
 		mainWindow.getContentPane().add(Interface, BorderLayout.EAST);
 
 		LibraryTable = new JTable();
-		LibraryTable.setModel(LibraryController.getTableModelOfData());
+		LibraryTable.setModel(CollectionController.getTableModelOfData());
 		LibraryTable.setPreferredSize(new Dimension(200, 200));
 		LibraryTable.setFillsViewportHeight(true);
 		LibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -332,7 +323,7 @@ public class PlayerView{
 	}
 
 	public void repaint()	{
-		DefaultTableModel model = LibraryController.getTableModelOfData();
+		DefaultTableModel model = CollectionController.getTableModelOfData();
 		LibraryTable.setModel(model);
 	}
 
