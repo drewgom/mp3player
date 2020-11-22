@@ -3,6 +3,7 @@ package controllers;
 import models.*;
 import views.PlayerView;
 
+import javax.swing.table.DefaultTableModel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -76,6 +77,7 @@ public class PlayerController {
 			System.out.println("Selected file: "+newSong.getAbsolutePath());
 			CollectionController.add(newSong.getAbsolutePath());
 			//Can't write specifics since how you set things up hasn't been pushed to the git.
+			playerView.repaint();
 		}
 		else {
 			System.out.println("Didn't select a file.");
@@ -84,7 +86,9 @@ public class PlayerController {
 
 	public void addViaPath(String path)	{
 		CollectionController.add(path);
+		System.out.println("About to repaint");
 		playerView.repaint();
+		System.out.println("Repainted");
 	}
 	public void remove() {
 		Integer row = playerView.getRow();
@@ -122,5 +126,30 @@ public class PlayerController {
 	public Song getSongFromIndex(Integer index)	{
 		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		return songs.get(index);
+	}
+
+	public Object[] getTableColumnNames()    {
+		return new String[]{"Title", "Artist", "Genre", "Year", "Comment"};
+	}
+
+	public DefaultTableModel getTableModelOfData()    {
+		DefaultTableModel tableModel = new DefaultTableModel();
+		tableModel.setColumnIdentifiers(getTableColumnNames());
+
+		ArrayList<Song> songs = player.getCollection().getSongsInCollection();
+
+		for (int i = 0; i < songs.size(); i++) {
+			Object[] currentSongData = new Object[getTableColumnNames().length];
+			Song currentSong = songs.get(i);
+			currentSongData[0] = currentSong.getTitle();
+			currentSongData[1] = currentSong.getArtists();
+			currentSongData[2] = currentSong.getGenre();
+			currentSongData[3] = currentSong.getYear();
+			currentSongData[4] = currentSong.getComments();
+
+			tableModel.addRow(currentSongData);
+		}
+
+		return tableModel;
 	}
 }

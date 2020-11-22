@@ -68,7 +68,7 @@ public class PlaylistView extends PlayerView {
         mainWindow.getContentPane().add(Interface, BorderLayout.CENTER);
 
         LibraryTable = new JTable();
-        LibraryTable.setModel(CollectionController.getTableModelOfData());
+        LibraryTable.setModel(controller.getTableModelOfData());
         LibraryTable.setPreferredSize(new Dimension(200, 200));
         LibraryTable.setFillsViewportHeight(true);
         LibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -326,7 +326,7 @@ public class PlaylistView extends PlayerView {
     }
 
     public void repaint()	{
-        DefaultTableModel model = CollectionController.getTableModelOfData();
+        DefaultTableModel model = controller.getTableModelOfData();
         LibraryTable.setModel(model);
     }
 

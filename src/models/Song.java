@@ -31,6 +31,25 @@ public class Song implements Comparable<Song>{
          this.path = path;
     }
 
+    public Song(
+                String title,
+                String genre,
+                String album,
+                String year,
+                String comments,
+                String artists,
+                String path
+    ) {
+        this.pk = 0;
+        this.title = title;
+        this.genre = genre;
+        this.album = album;
+        this.year = year;
+        this.comments = comments;
+        this.artists = artists;
+        this.path = path;
+    }
+
     public String getGenre() {
         return genre;
     }
@@ -41,6 +60,10 @@ public class Song implements Comparable<Song>{
 
     public Integer getPk() {
         return pk;
+    }
+
+    public void setPk(Integer pk) {
+        this.pk = pk;
     }
 
     public String getArtists() {
