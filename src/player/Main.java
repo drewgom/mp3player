@@ -1,15 +1,19 @@
 package player;
 
-import controllers.PlayerController;
-import javazoom.jlgui.basicplayer.BasicPlayer;
 import models.Library;
 import models.Player;
-import views.PlayerView;
+import models.Playlist;
+import models.Song;
+import utils.DataAccessLayer;
+import views.MainPlayerView;
+
+import java.util.ArrayList;
 
 public class Main {
 
     public static void main(String[] args) {
-        PlayerView view = PlayerView.getPlayerView();
+
+        MainPlayerView view = new MainPlayerView(new Player(Library.getLibrary()));
     	
     	view.setNowPlaying("test text");
         view.display();

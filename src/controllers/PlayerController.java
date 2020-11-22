@@ -1,65 +1,29 @@
 package controllers;
 
-import models.Library;
-import models.Player;
-import models.Song;
-import models.State;
+import models.*;
 import views.PlayerView;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-
-import models.Song;
-import views.PlayerView;
-
-import javax.swing.*;
 
 public class PlayerController {
-	private static PlayerView playerView = PlayerView.getPlayerView();
-	private static Player player = Player.getPlayer();
+	private PlayerView playerView;
+	private Player player;
 
-	public static class buttonListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			switch (e.getActionCommand()) {
-				case "play":
-					play();
-					break;
-				case "pause":
-					pause();
-					break;
-				case "stop":
-					stop();
-					break;
-				case "skipForward":
-					skipForward();
-					break;
-				case "skipBack":
-					skipBack();
-					break;
-				case "add":
-					add();
-					break;
-				case "remove":
-					remove();
-					break;
-			}
-		}
-	};
+	public PlayerController(PlayerView playerView, Player player)	{
+		this.playerView = playerView;
+		this.player = player;
+	}
 
-	protected static void play() {
+	public void play() {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
 
-		Integer row = PlayerView.getRow();
-		Song selectedSong = player.getLibrary().getSongs().get(row);
+		Integer row = playerView.getRow();
+		System.out.println("Row is" + row);
+
+		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		if (player.getState() == State.IDLE) {
 			System.out.println("Play button pressed and is idle");
@@ -72,31 +36,33 @@ public class PlayerController {
 		}
 	}
 
-	protected static void pause() {
+	public void pause() {
 		System.out.println("Pause button pressed.");
 		playerView.setPlay();
 		player.pause();
 	}
 
-	protected static void stop() {
+	public void stop() {
 		System.out.println("Stop button pressed.");
 		player.stop();
 	}
-	protected static void skipForward() {
+
+	public void skipForward() {
 		System.out.println("Skip forward button pressed.");
 		player.next();
-		Integer row = PlayerController.getIndexOfCurrentSong();
+		Integer row = getIndexOfCurrentSong();
 		playerView.refreshSelected(row);
 		System.out.println("New row is " + row);
 	}
-	protected static void skipBack() {
+
+	public void skipBack() {
 		System.out.println("Skip back button pressed.");
 		player.previous();
-		Integer row = PlayerController.getIndexOfCurrentSong();
+		Integer row = getIndexOfCurrentSong();
 		playerView.refreshSelected(row);
 		System.out.println("New row is " + row);
 	}
-	protected static void add() {
+	public void addViaPopup() {
 		System.out.println("Add button pressed.");
 		
 		File newSong = playerView.addPopup();
@@ -104,51 +70,42 @@ public class PlayerController {
 			System.out.println("Selected file: "+newSong.getAbsolutePath());
 			LibraryController.add(newSong.getAbsolutePath());
 			//Can't write specifics since how you set things up hasn't been pushed to the git.
+			playerView.repaint();
 		}
 		else {
 			System.out.println("Didn't select a file.");
 		}
 	}
-	protected static void remove() {
-		Integer row = PlayerView.getRow();
-		Song selectedSong = player.getLibrary().getSongs().get(row);
+
+	public void addViaPath(String path)	{
+		LibraryController.add(path);
+		System.out.println("About to repaint");
+		playerView.repaint();
+		System.out.println("Repainted");
+	}
+	public void remove() {
+		Integer row = playerView.getRow();
+		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		LibraryController.remove(selectedSong,row);
 		playerView.repaint();
 		System.out.println("Remove button pressed.");
 	}
 	
-	public static class contextListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			switch(e.getActionCommand()) {
-				case "play":
-					playSelected();
-					break;
-				case "add":
-					add();
-					break;
-				case "remove":
-					removeSelected();
-					break;
-			}
-		}
-	}
-	
-	protected static void playSelected() {
+	public void playSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Play selected song: Index "+Integer.toString(index)+".");
 		player.play(getSongFromIndex(index));
 	}
 
-	protected static void removeSelected() {
+	public void removeSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
 		LibraryController.remove(getSongFromIndex(index),index);
 	}
 
-	public static Integer getIndexOfCurrentSong()	{
-		ArrayList<Song> songs = Library.getLibrary().getSongs();
+	public Integer getIndexOfCurrentSong()	{
+		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		Song currSong = player.getCurrentSong();
 		Integer row = null;
 		for (int i = 0; i < songs.size(); i++)	{
@@ -159,28 +116,40 @@ public class PlayerController {
 		return row;
 	}
 
-	public static Song getSongFromIndex(Integer index)	{
-		ArrayList<Song> songs = Library.getLibrary().getSongs();
+	public Song getSongFromIndex(Integer index)	{
+		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
 		return songs.get(index);
 	}
-	
-	public static class LibraryDrop extends DropTarget {
-		public void drop (DropTargetDropEvent evt) {
-			try {
-				evt.acceptDrop(DnDConstants.ACTION_COPY);
-				
-				//TODO Figure out what type this returns
-				List result = (List) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-				
-				for(Object o : result) {
-					System.out.println("Dropped file: "+o.toString());
-					LibraryController.add(o.toString());
-					//Can't write specifics since how you set things up hasn't been pushed to the git.
-				}
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-			}
+
+	public Object[] getTableColumnNames()    {
+		return new String[]{"Title", "Artist", "Genre", "Year", "Comment"};
+	}
+
+	public DefaultTableModel getTableModelOfData()    {
+		DefaultTableModel tableModel = new DefaultTableModel();
+		tableModel.setColumnIdentifiers(getTableColumnNames());
+
+		ArrayList<Song> songs = player.getCollection().getSongsInCollection();
+
+		for (int i = 0; i < songs.size(); i++) {
+			Object[] currentSongData = new Object[getTableColumnNames().length];
+			Song currentSong = songs.get(i);
+			currentSongData[0] = currentSong.getTitle();
+			currentSongData[1] = currentSong.getArtists();
+			currentSongData[2] = currentSong.getGenre();
+			currentSongData[3] = currentSong.getYear();
+			currentSongData[4] = currentSong.getComments();
+
+			tableModel.addRow(currentSongData);
 		}
+
+		return tableModel;
+	}
+
+	// PLACEHOLDER
+	public void swtichCollectionForPlayer() {
+		/*Playlist newPlaylist = CollectionManager.getCollectionManager().getAllPlaylists().get();
+		player.setCollection(newPlaylist);
+		playerView.repaint();*/
 	}
 }
