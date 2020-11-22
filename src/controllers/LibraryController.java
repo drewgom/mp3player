@@ -15,7 +15,7 @@ import views.PlayerView;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
-public class CollectionController {
+public class LibraryController {
     public static SongCollection lib = Library.getLibrary();
     public static DefaultTableModel tableModel;
 

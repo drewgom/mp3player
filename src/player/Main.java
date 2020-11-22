@@ -14,7 +14,23 @@ public class Main {
 
     public static void main(String[] args) {
 
-        MainPlayerView view = new MainPlayerView(new Player(Library.getLibrary()));
+        DataAccessLayer dal = DataAccessLayer.getDAL();
+
+        // get the songs from the library
+        ArrayList<Song> songs = dal.getAllSongsFromSongTable();
+
+        // create a playlist
+        dal.createPlaylist("testlist");
+        ArrayList<Playlist> playlists = dal.getAllPlaylistsFromTable();
+        Playlist playlist = playlists.get(0);
+
+        // add three songs to the playlist
+        playlist.addSongToCollection(songs.get(0));
+        playlist.addSongToCollection(songs.get(1));
+        playlist.addSongToCollection(songs.get(2));
+
+
+        MainPlayerView view = new MainPlayerView(new Player(playlist));
     	
     	view.setNowPlaying("test text");
         view.display();

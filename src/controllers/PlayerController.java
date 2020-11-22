@@ -4,15 +4,8 @@ import models.*;
 import views.PlayerView;
 
 import javax.swing.table.DefaultTableModel;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PlayerController {
 	private PlayerView playerView;
@@ -75,7 +68,7 @@ public class PlayerController {
 		File newSong = playerView.addPopup();
 		if(newSong != null) {
 			System.out.println("Selected file: "+newSong.getAbsolutePath());
-			CollectionController.add(newSong.getAbsolutePath());
+			LibraryController.add(newSong.getAbsolutePath());
 			//Can't write specifics since how you set things up hasn't been pushed to the git.
 			playerView.repaint();
 		}
@@ -85,7 +78,7 @@ public class PlayerController {
 	}
 
 	public void addViaPath(String path)	{
-		CollectionController.add(path);
+		LibraryController.add(path);
 		System.out.println("About to repaint");
 		playerView.repaint();
 		System.out.println("Repainted");
@@ -94,7 +87,7 @@ public class PlayerController {
 		Integer row = playerView.getRow();
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
-		CollectionController.remove(selectedSong,row);
+		LibraryController.remove(selectedSong,row);
 		playerView.repaint();
 		System.out.println("Remove button pressed.");
 	}
@@ -108,7 +101,7 @@ public class PlayerController {
 	public void removeSelected() {
 		int index = playerView.getSelectedIndex();
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
-		CollectionController.remove(getSongFromIndex(index),index);
+		LibraryController.remove(getSongFromIndex(index),index);
 	}
 
 	public Integer getIndexOfCurrentSong()	{
@@ -151,5 +144,13 @@ public class PlayerController {
 		}
 
 		return tableModel;
+	}
+
+	// PLACEHOLDER
+
+	public void swtichCollectionForPlayer() {
+		/*Playlist newPlaylist = CollectionManager.getCollectionManager().getAllPlaylists().get();
+		player.setCollection(newPlaylist);
+		playerView.repaint();*/
 	}
 }

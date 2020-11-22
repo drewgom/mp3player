@@ -21,11 +21,10 @@ public class Playlist extends SongCollection{
 
     public void addSongToCollection(Song song)  {
         DataAccessLayer dal = DataAccessLayer.getDAL();
-        if (song.getPk() != 0) {
-            dal.addSongToPlaylist(song.getPk(), pk);
-        } else  {
-            System.out.println("Song is not currently in the DB");
+        if (song.getPk() == 0) {
+            Library.getLibrary().addSongToCollection(song);
         }
+        dal.addSongToPlaylist(song.getPk(), pk);
         loadSongsFromDB();
     }
 

@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import controllers.CollectionController;
+import controllers.LibraryController;
 import controllers.PlayerController;
 import models.Player;
 
@@ -34,7 +34,7 @@ public class MainPlayerView extends PlayerView{
 	private CardLayout PlayPauseCard = null;
 	private PlayerController controller;
 	private ActionListener listener = new buttonListener();
-	private CollectionController collectionController = new CollectionController();
+	private LibraryController collectionController = new LibraryController();
 	private ActionListener contextListener = new contextListener();
 	private Integer row = null;
 	private JLabel NowPlaying = null;

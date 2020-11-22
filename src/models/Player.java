@@ -132,6 +132,10 @@ public class Player {
         return collection;
     }
 
+    public void setCollection(SongCollection sc) {
+        collection = sc;
+    }
+
     public Song getCurrentSong() {
         return currentSong;
     }
