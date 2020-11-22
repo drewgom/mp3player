@@ -147,7 +147,6 @@ public class PlayerController {
 	}
 
 	// PLACEHOLDER
-
 	public void swtichCollectionForPlayer() {
 		/*Playlist newPlaylist = CollectionManager.getCollectionManager().getAllPlaylists().get();
 		player.setCollection(newPlaylist);
