@@ -1,6 +1,8 @@
 package views;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
@@ -34,6 +36,7 @@ public class MainPlayerView extends PlayerView{
 	private CardLayout PlayPauseCard = null;
 	private PlayerController controller;
 	private ActionListener listener = new buttonListener();
+	private ChangeListener changeListener = new sliderListener();
 	private LibraryController collectionController = new LibraryController();
 	private ActionListener contextListener = new contextListener();
 	private Integer row = null;
@@ -198,6 +201,7 @@ public class MainPlayerView extends PlayerView{
 		VolumeSlider.setPreferredSize(new Dimension(20, 60));
 		VolumeSlider.setOrientation(SwingConstants.VERTICAL);
 		SongControls.add(VolumeSlider, BorderLayout.EAST);
+		VolumeSlider.addChangeListener(changeListener);
 
 		this.mainWindow.pack();
 
@@ -383,6 +387,15 @@ public class MainPlayerView extends PlayerView{
 					controller.removeSelected();
 					break;
 			}
+		}
+	}
+
+	public class sliderListener implements ChangeListener	{
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			JSlider source =(JSlider) e.getSource();
+			double valueAsDouble = source.getValue();
+			controller.updateVolume(valueAsDouble/100);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package models;
 
 import javazoom.jlgui.basicplayer.BasicPlayer;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -120,6 +121,18 @@ public class Player {
                 throw new IllegalStateException("No next song could be selected for some reason");
             }
         } catch(Exception e)    {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updateVolume(Double gain)    {
+        try {
+            basePlayer.setGain(gain);
+        } catch(BasicPlayerException e)   {
+            System.out.println("BasicPlayerException");
+            System.out.println(e.getMessage());
+        } catch(Exception e)   {
+            System.out.println("Exception thrown");
             System.out.println(e.getMessage());
         }
     }

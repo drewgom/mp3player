@@ -121,6 +121,10 @@ public class PlayerController {
 		return songs.get(index);
 	}
 
+	public void updateVolume(Double gain)	{
+		player.updateVolume(gain);
+	}
+
 	public Object[] getTableColumnNames()    {
 		return new String[]{"Title", "Artist", "Genre", "Year", "Comment"};
 	}
