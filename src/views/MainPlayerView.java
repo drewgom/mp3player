@@ -29,7 +29,7 @@ import java.util.List;
 
 public class MainPlayerView extends PlayerView{
 	private JFrame mainWindow = null;
-	private String title = "Austin & Drew's MP3 Player";
+	private String title = "Drew's MP3 Player";
 
 	private JTable LibraryTable = null;
 	private JPanel PlayPauseFlip = null;
