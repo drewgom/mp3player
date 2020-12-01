@@ -78,6 +78,9 @@ public class MainPlayerView extends PlayerView{
 
 		tree = new JTree(collectionManagerController.getTreeOfPlaylists());
 		tree.setRootVisible(false);
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
 		tree.addTreeSelectionListener(treeListener);
 		mainWindow.add(tree);
 
@@ -355,6 +358,9 @@ public class MainPlayerView extends PlayerView{
 	public void repaint()	{
 		DefaultTableModel model = controller.getTableModelOfData();
 		tree.setModel(collectionManagerController.getTreeOfPlaylists());
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
 		contextAddPlaylist.removeAll();
 		collectionManagerController.getPlaylistContexts(contextAddPlaylist,this.contextListener);
 		System.out.println("about to repaint");
