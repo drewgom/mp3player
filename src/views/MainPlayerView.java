@@ -14,6 +14,7 @@ import controllers.LibraryController;
 import controllers.PlayerController;
 import models.CollectionManager;
 import models.Player;
+import models.Song;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -45,9 +46,11 @@ public class MainPlayerView extends PlayerView{
 	private TreeSelectionListener treeListener = new treeListener();
 	private LibraryController libraryController = new LibraryController();
 	private CollectionManagerController collectionManagerController = new CollectionManagerController();
+
 	private ActionListener contextListener = new contextListener();
 	private Integer row = null;
 	private JLabel NowPlaying = null;
+	private JMenu contextAddPlaylist = null;
 	JTree tree = null;
 
 	private JFrame confirmationWindow = null;
@@ -114,6 +117,10 @@ public class MainPlayerView extends PlayerView{
 		contextRemove.addActionListener(this.contextListener);
 		contextRemove.setActionCommand("remove");
 		LibraryContext.add(contextRemove);
+
+		contextAddPlaylist = new JMenu("Add to Playlist");
+		collectionManagerController.getPlaylistContexts(contextAddPlaylist, this.contextListener);
+		LibraryContext.add(contextAddPlaylist);
 
 		LibraryTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -263,6 +270,10 @@ public class MainPlayerView extends PlayerView{
 		LibraryMenu.add(menuRemove);
 
 		JMenu OptionsMenu = new JMenu("Options");
+		JMenuItem createPlaylist = new JMenuItem("Create Playlist");
+		createPlaylist.addActionListener(this.listener);
+		createPlaylist.setActionCommand("createPlaylist");
+		OptionsMenu.add(createPlaylist);
 		menuBar.add(OptionsMenu);
 
 		this.playBackButtons[0] = SkipBackButton;
@@ -344,6 +355,8 @@ public class MainPlayerView extends PlayerView{
 	public void repaint()	{
 		DefaultTableModel model = controller.getTableModelOfData();
 		tree.setModel(collectionManagerController.getTreeOfPlaylists());
+		contextAddPlaylist.removeAll();
+		collectionManagerController.getPlaylistContexts(contextAddPlaylist,this.contextListener);
 		System.out.println("about to repaint");
 		LibraryTable.setModel(model);
 	}
@@ -385,6 +398,9 @@ public class MainPlayerView extends PlayerView{
 				case "remove":
 					controller.remove();
 					break;
+				case "createPlaylist":
+					collectionManagerController.createPlaylist();
+					break;
 			}
 		}
 	};
@@ -402,6 +418,11 @@ public class MainPlayerView extends PlayerView{
 				case "remove":
 					controller.removeSelected();
 					break;
+				case "addToPlaylist":
+					JMenuItem sourceObj = (JMenuItem) e.getSource();
+					System.out.println("Option selected was " + sourceObj.getText());
+					Song sng = controller.getSongFromIndex(row);
+					collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
 			}
 		}
 	}
@@ -453,5 +474,9 @@ public class MainPlayerView extends PlayerView{
 				ex.printStackTrace();
 			}
 		}
+	}
+
+	public ActionListener getContextListener() {
+		return contextListener;
 	}
 }

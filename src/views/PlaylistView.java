@@ -4,6 +4,8 @@ import controllers.CollectionManagerController;
 import controllers.LibraryController;
 import controllers.PlayerController;
 import models.Player;
+import models.Playlist;
+import models.Song;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -21,7 +23,7 @@ import java.util.List;
 
 public class PlaylistView extends PlayerView {
     private JFrame playlistWindow = null;
-    private String title = "playlist window";
+    private String title = null;
 
     private JTable LibraryTable = null;
     private JPanel PlayPauseFlip = null;
@@ -34,6 +36,7 @@ public class PlaylistView extends PlayerView {
     private ActionListener contextListener = new contextListener();
     private Integer row = null;
     private PlaylistView view = this;
+    private JMenu contextAddPlaylist = null;
 
     private JFrame confirmationWindow = null;
 
@@ -47,7 +50,8 @@ public class PlaylistView extends PlayerView {
         }
 
         controller = new PlayerController(this, player);
-
+        Playlist pl = (Playlist) player.getCollection();
+        title = pl.getName();
         this.playlistWindow = new JFrame(title + " - Now Playing: Nothing");
         playlistWindow.setMinimumSize(new Dimension(480, 400));
         playlistWindow.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Svona\\Desktop\\Git\\mp3player\\res\\window-icon.png"));
@@ -80,6 +84,10 @@ public class PlaylistView extends PlayerView {
         contextPlay.addActionListener(this.contextListener);
         contextPlay.setActionCommand("play");
         LibraryContext.add(contextPlay);
+
+        contextAddPlaylist = new JMenu("Add to Playlist");
+        collectionManagerController.getPlaylistContexts(contextAddPlaylist, this.contextListener);
+        LibraryContext.add(contextAddPlaylist);
 
         LibraryTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -213,6 +221,10 @@ public class PlaylistView extends PlayerView {
         LibraryMenu.add(menuRemove);
 
         JMenu OptionsMenu = new JMenu("Options");
+        JMenuItem createPlaylist = new JMenuItem("Create Playlist");
+        createPlaylist.addActionListener(this.listener);
+        createPlaylist.setActionCommand("createPlaylist");
+        OptionsMenu.add(createPlaylist);
         menuBar.add(OptionsMenu);
 
         this.playBackButtons[0] = SkipBackButton;
@@ -289,6 +301,8 @@ public class PlaylistView extends PlayerView {
 
     public void repaint()	{
         DefaultTableModel model = controller.getTableModelOfData();
+        contextAddPlaylist.removeAll();
+        collectionManagerController.getPlaylistContexts(contextAddPlaylist,this.contextListener);
         LibraryTable.setModel(model);
     }
 
@@ -329,6 +343,9 @@ public class PlaylistView extends PlayerView {
                 case "remove":
                     controller.remove();
                     break;
+                case "createPlaylist":
+                    collectionManagerController.createPlaylist();
+                    break;
             }
         }
     };
@@ -340,12 +357,11 @@ public class PlaylistView extends PlayerView {
                 case "play":
                     controller.playSelected();
                     break;
-                case "add":
-                    controller.addViaPopup();
-                    break;
-                case "remove":
-                    controller.removeSelected();
-                    break;
+                case "addToPlaylist":
+                    JMenuItem sourceObj = (JMenuItem) e.getSource();
+                    System.out.println("Option selected was " + sourceObj.getText());
+                    Song sng = controller.getSongFromIndex(row);
+                    collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
             }
         }
     }

@@ -117,7 +117,7 @@ public class PlayerController {
 	}
 
 	public Song getSongFromIndex(Integer index)	{
-		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
+		ArrayList<Song> songs = player.getCollection().getSongsInCollection();
 		return songs.get(index);
 	}
 

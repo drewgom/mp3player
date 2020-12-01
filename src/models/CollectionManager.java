@@ -5,6 +5,7 @@ import utils.PlayerDB;
 import views.PlayerView;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 public class CollectionManager {
     ArrayList<Playlist> playlists;
@@ -40,4 +41,14 @@ public class CollectionManager {
     }
 
     public ArrayList<Playlist> getAllPlaylists()    { return playlists; }
+
+    public Playlist getPlaylistByName(String name) {
+        for (Playlist pl : playlists)   {
+            if (pl.getName() == name)   {
+                return pl;
+            }
+        }
+
+        throw new IllegalArgumentException("There is no playlist by the name " + name);
+    }
 }
