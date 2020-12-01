@@ -39,10 +39,14 @@ public class CollectionManagerController {
 
     // PLACEHOLDER
     // This will be the function that gets called when we try to delete a playlist
-    public void deletePlaylist(String playlistName)    {
-        Playlist playlist = collectionManager.getPlaylistByName(playlistName);
-        collectionManager.deletePlaylist(playlist.getPk());
-        refreshWindows();
+    public void deletePlaylist(String playlistName) {
+        int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + playlistName + "?");
+        System.out.println(response);
+        if (response == 0)   {
+            Playlist playlist = collectionManager.getPlaylistByName(playlistName);
+            collectionManager.deletePlaylist(playlist.getPk());
+            refreshWindows();
+        }
     }
 
     // PLACEHOLDER
