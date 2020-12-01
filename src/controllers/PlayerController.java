@@ -132,9 +132,9 @@ public class PlayerController {
 	public DefaultTableModel getTableModelOfData()    {
 		DefaultTableModel tableModel = new DefaultTableModel();
 		tableModel.setColumnIdentifiers(getTableColumnNames());
-
+                
 		ArrayList<Song> songs = player.getCollection().getSongsInCollection();
-
+                
 		for (int i = 0; i < songs.size(); i++) {
 			Object[] currentSongData = new Object[getTableColumnNames().length];
 			Song currentSong = songs.get(i);
@@ -150,10 +150,21 @@ public class PlayerController {
 		return tableModel;
 	}
 
-	// PLACEHOLDER
-	public void swtichCollectionForPlayer() {
-		/*Playlist newPlaylist = CollectionManager.getCollectionManager().getAllPlaylists().get();
-		player.setCollection(newPlaylist);
-		playerView.repaint();*/
+	public void swtichCollectionForPlayer(String collectionName) {
+		if (collectionName == "Library")	{
+			player.setCollection(Library.getLibrary());
+		} else {
+			ArrayList<Playlist> playlists = CollectionManager.getCollectionManager().getAllPlaylists();
+			for (int i = 0; i < playlists.size(); i++) {
+				System.out.println(playlists.get(i).getName());
+			}
+
+			for (int i = 0; i < playlists.size(); i++) {
+				if(playlists.get(i).getName() == collectionName)	{
+					player.setCollection(playlists.get(i));
+				}
+			}
+		}
+		playerView.repaint();
 	}
 }

@@ -3,11 +3,16 @@ package views;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
+import controllers.CollectionManagerController;
 import controllers.LibraryController;
 import controllers.PlayerController;
+import models.CollectionManager;
 import models.Player;
 
 import java.awt.Image;
@@ -37,10 +42,13 @@ public class MainPlayerView extends PlayerView{
 	private PlayerController controller;
 	private ActionListener listener = new buttonListener();
 	private ChangeListener changeListener = new sliderListener();
-	private LibraryController collectionController = new LibraryController();
+	private TreeSelectionListener treeListener = new treeListener();
+	private LibraryController libraryController = new LibraryController();
+	private CollectionManagerController collectionManagerController = new CollectionManagerController();
 	private ActionListener contextListener = new contextListener();
 	private Integer row = null;
 	private JLabel NowPlaying = null;
+	JTree tree = null;
 
 	private JFrame confirmationWindow = null;
 
@@ -63,7 +71,12 @@ public class MainPlayerView extends PlayerView{
 
 		NowPlaying = new JLabel("Now Playing - Nothing");
 		NowPlaying.setHorizontalAlignment(SwingConstants.CENTER);
-		mainWindow.getContentPane().add(NowPlaying, BorderLayout.CENTER);
+		// mainWindow.getContentPane().add(NowPlaying, BorderLayout.CENTER);
+
+		tree = new JTree(collectionManagerController.getTreeOfPlaylists());
+		tree.setRootVisible(false);
+		tree.addTreeSelectionListener(treeListener);
+		mainWindow.add(tree);
 
 		JPanel Interface = new JPanel();
 		mainWindow.getContentPane().add(Interface, BorderLayout.EAST);
@@ -329,6 +342,8 @@ public class MainPlayerView extends PlayerView{
 
 	public void repaint()	{
 		DefaultTableModel model = controller.getTableModelOfData();
+		tree.setModel(collectionManagerController.getTreeOfPlaylists());
+		System.out.println("about to repaint");
 		LibraryTable.setModel(model);
 	}
 
@@ -386,6 +401,26 @@ public class MainPlayerView extends PlayerView{
 				case "remove":
 					controller.removeSelected();
 					break;
+			}
+		}
+	}
+
+	public class treeListener implements TreeSelectionListener {
+		@Override
+		public void valueChanged(TreeSelectionEvent e) {
+			System.out.println("value changed");
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					tree.getLastSelectedPathComponent();
+			/* if nothing is selected */
+			if (node == null) return;
+
+			System.out.println("clicked on tree");
+			Object nodeInfo = node.getUserObject();
+			System.out.println(nodeInfo.toString());
+
+			if (nodeInfo.toString() != "Playlists") {
+				controller.swtichCollectionForPlayer(nodeInfo.toString());
+				System.out.println("After call to switch collection");
 			}
 		}
 	}

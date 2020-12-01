@@ -14,9 +14,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        PlaylistView view = new PlaylistView(new Player(Library.getLibrary()));
+        MainPlayerView view = new MainPlayerView(new Player(Library.getLibrary()));
     	
-    	// view.setNowPlaying("test text");
+    	view.setNowPlaying("test text");
         view.display();
     }
 }

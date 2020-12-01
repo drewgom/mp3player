@@ -1,8 +1,14 @@
 package controllers;
 
 import models.CollectionManager;
+import models.Playlist;
 import views.PlayerView;
 
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.util.ArrayList;
 
 public class CollectionManagerController {
@@ -40,5 +46,20 @@ public class CollectionManagerController {
     // PLACEHOLDER
     public void addSongToPlaylist() {
         refreshWindows();
+    }
+
+    public DefaultTreeModel getTreeOfPlaylists()   {
+        DefaultMutableTreeNode rt = new DefaultMutableTreeNode("r");
+        DefaultMutableTreeNode libraryNode = new DefaultMutableTreeNode("Library");
+        DefaultMutableTreeNode playlistNode = new DefaultMutableTreeNode("Playlists");
+        ArrayList<Playlist> playlists = collectionManager.getAllPlaylists();
+        for (Playlist playlist : playlists) {
+            playlistNode.add(new DefaultMutableTreeNode(playlist.getName()));
+        }
+
+        rt.add(libraryNode);
+        rt.add(playlistNode);
+        DefaultTreeModel treeModel = new DefaultTreeModel(rt);
+        return treeModel;
     }
 }
