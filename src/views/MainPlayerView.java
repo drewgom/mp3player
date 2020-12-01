@@ -276,6 +276,7 @@ public class MainPlayerView extends PlayerView{
 		Timebar.setValue(0);
 		Timebar.setPaintLabels(true);
 		SongControls.add(Timebar, BorderLayout.NORTH);
+		collectionManagerController.attachWindow(this);
 	}
 	
 	public File addPopup() {

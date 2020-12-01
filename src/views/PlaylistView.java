@@ -1,5 +1,6 @@
 package views;
 
+import controllers.CollectionManagerController;
 import controllers.LibraryController;
 import controllers.PlayerController;
 import models.Player;
@@ -29,8 +30,10 @@ public class PlaylistView extends PlayerView {
     private ActionListener listener = new buttonListener();
     private ChangeListener changeListener = new sliderListener();
     private LibraryController collectionController = new LibraryController();
+    private CollectionManagerController collectionManagerController = new CollectionManagerController();
     private ActionListener contextListener = new contextListener();
     private Integer row = null;
+    private PlaylistView view = this;
 
     private JFrame confirmationWindow = null;
 
@@ -48,7 +51,7 @@ public class PlaylistView extends PlayerView {
         this.playlistWindow = new JFrame(title + " - Now Playing: Nothing");
         playlistWindow.setMinimumSize(new Dimension(480, 400));
         playlistWindow.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Svona\\Desktop\\Git\\mp3player\\res\\window-icon.png"));
-        playlistWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        playlistWindow.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         playlistWindow.getContentPane().setLayout(new BorderLayout(0, 0));
 
         JPanel Interface = new JPanel();
@@ -223,6 +226,8 @@ public class PlaylistView extends PlayerView {
         Timebar.setValue(0);
         Timebar.setPaintLabels(true);
         SongControls.add(Timebar, BorderLayout.NORTH);
+
+        collectionManagerController.attachWindow(view);
     }
 
     public File addPopup() {
@@ -352,6 +357,31 @@ public class PlaylistView extends PlayerView {
             double valueAsDouble = source.getValue();
             controller.updateVolume(valueAsDouble/100);
         }
+    }
+
+    public class windowActionListener implements WindowListener  {
+        @Override
+        public void windowOpened(WindowEvent e) { }
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            collectionManagerController.detachWindow(view);
+        }
+
+        @Override
+        public void windowClosed(WindowEvent e) { }
+
+        @Override
+        public void windowIconified(WindowEvent e) { }
+
+        @Override
+        public void windowDeiconified(WindowEvent e) { }
+
+        @Override
+        public void windowActivated(WindowEvent e) { }
+
+        @Override
+        public void windowDeactivated(WindowEvent e) { }
     }
 
     public class LibraryDrop extends DropTarget {

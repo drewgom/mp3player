@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class CollectionManagerController {
     CollectionManager collectionManager = CollectionManager.getCollectionManager();
-    static ArrayList<PlayerView> openWindows;
+    static ArrayList<PlayerView> openWindows = new ArrayList<PlayerView>();
 
     public static void attachWindow(PlayerView pv)  {
         openWindows.add(pv);
