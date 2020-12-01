@@ -291,7 +291,7 @@ public class PlaylistView extends PlayerView {
         return new ImageIcon(imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
     }
 
-    public Integer getRow()	{
+    public Integer getTableRow()	{
         return row;
     }
 

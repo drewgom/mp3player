@@ -12,7 +12,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import controllers.CollectionManagerController;
 import controllers.LibraryController;
 import controllers.PlayerController;
-import models.CollectionManager;
 import models.Player;
 import models.Song;
 
@@ -48,7 +47,8 @@ public class MainPlayerView extends PlayerView{
 	private CollectionManagerController collectionManagerController = new CollectionManagerController();
 
 	private ActionListener contextListener = new contextListener();
-	private Integer row = null;
+	private Integer tableRow = null;
+	private String treeString = null;
 	private JLabel NowPlaying = null;
 	private JMenu contextAddPlaylist = null;
 	JTree tree = null;
@@ -81,6 +81,36 @@ public class MainPlayerView extends PlayerView{
 		for (int i = 0; i < tree.getRowCount(); i++) {
 			tree.expandRow(i);
 		}
+
+		JPopupMenu TreeContext = new JPopupMenu();
+
+		JMenuItem contextDeleteCollection = new JMenuItem("Delete Song Collection");
+		contextDeleteCollection.addActionListener(this.contextListener);
+		contextDeleteCollection.setActionCommand("deleteCollection");
+		TreeContext.add(contextDeleteCollection);
+
+		JMenuItem contextOpenCollection = new JMenuItem("Open Song Collection in New Window");
+		contextOpenCollection.addActionListener(this.contextListener);
+		contextOpenCollection.setActionCommand("openCollection");
+
+		tree.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				Object[] pathAsArray = tree.getPathForLocation(e.getX(), e.getY()).getPath();
+				System.out.println("Hello");
+				treeString = pathAsArray[pathAsArray.length-1].toString();
+				System.out.println(treeString);
+			}
+		});
+
+		tree.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(SwingUtilities.isRightMouseButton(e))	{
+					TreeContext.show(tree, e.getX(), e.getY());
+				}
+			}
+		});
+
+		TreeContext.add(contextOpenCollection);
 		tree.addTreeSelectionListener(treeListener);
 		mainWindow.add(tree);
 
@@ -97,8 +127,8 @@ public class MainPlayerView extends PlayerView{
 
 		MouseListener mouseListener = new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				row = LibraryTable.getSelectedRow();
-				System.out.println("Selected index = " + row);
+				tableRow = LibraryTable.getSelectedRow();
+				System.out.println("Selected index = " + tableRow);
 			}
 		};
 
@@ -347,8 +377,8 @@ public class MainPlayerView extends PlayerView{
 		return new ImageIcon(imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
 	}
 
-	public Integer getRow()	{
-		return row;
+	public Integer getTableRow()	{
+		return tableRow;
 	}
 
 	public void display()	{
@@ -427,8 +457,16 @@ public class MainPlayerView extends PlayerView{
 				case "addToPlaylist":
 					JMenuItem sourceObj = (JMenuItem) e.getSource();
 					System.out.println("Option selected was " + sourceObj.getText());
-					Song sng = controller.getSongFromIndex(row);
+					Song sng = controller.getSongFromIndex(tableRow);
 					collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
+					break;
+				case "openCollection":
+					System.out.println("In open collection");
+					collectionManagerController.openCollection(treeString);
+					break;
+				case "deleteCollection":
+					collectionManagerController.deletePlaylist(treeString);
+					break;
 			}
 		}
 	}

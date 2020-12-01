@@ -20,7 +20,7 @@ public class PlayerController {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
 
-		Integer row = playerView.getRow();
+		Integer row = playerView.getTableRow();
 		System.out.println("Row is" + row);
 
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
@@ -84,7 +84,7 @@ public class PlayerController {
 		System.out.println("Repainted");
 	}
 	public void remove() {
-		Integer row = playerView.getRow();
+		Integer row = playerView.getTableRow();
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
 		LibraryController.remove(selectedSong,row);

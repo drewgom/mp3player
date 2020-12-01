@@ -1,11 +1,9 @@
 package controllers;
 
-import models.CollectionManager;
-import models.Playlist;
-import models.Song;
-import models.SongCollection;
+import models.*;
 import views.MainPlayerView;
 import views.PlayerView;
+import views.PlaylistView;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -41,8 +39,9 @@ public class CollectionManagerController {
 
     // PLACEHOLDER
     // This will be the function that gets called when we try to delete a playlist
-    public void deletePlaylist()    {
-        // collectionManager.deletePlaylist();
+    public void deletePlaylist(String playlistName)    {
+        Playlist playlist = collectionManager.getPlaylistByName(playlistName);
+        collectionManager.deletePlaylist(playlist.getPk());
         refreshWindows();
     }
 
@@ -78,5 +77,12 @@ public class CollectionManagerController {
             newItem.setActionCommand("addToPlaylist");
             contextAddPlaylist.add(newItem);
         }
+    }
+
+    public void openCollection(String collectionName) {
+        // automatically load the library back in to the main
+        Playlist playlist = collectionManager.getPlaylistByName(collectionName);
+        PlaylistView newView = new PlaylistView(new Player(playlist));
+        newView.display();
     }
 }
