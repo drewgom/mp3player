@@ -463,6 +463,7 @@ public class MainPlayerView extends PlayerView{
 				case "openCollection":
 					System.out.println("In open collection");
 					collectionManagerController.openCollection(treeString);
+					controller.swtichCollectionForPlayer("Library");
 					break;
 				case "deleteCollection":
 					collectionManagerController.deletePlaylist(treeString);
