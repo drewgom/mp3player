@@ -15,5 +15,5 @@ public abstract class PlayerView {
 
     public abstract int getSelectedIndex();
 
-    public abstract Integer getTableRow();
+    public abstract int[] getTableRows();
 }

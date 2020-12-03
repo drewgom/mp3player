@@ -14,11 +14,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistView extends PlayerView {
@@ -34,9 +36,10 @@ public class PlaylistView extends PlayerView {
     private LibraryController collectionController = new LibraryController();
     private CollectionManagerController collectionManagerController = new CollectionManagerController();
     private ActionListener contextListener = new contextListener();
-    private Integer row = null;
+    private int[] rows = null;
     private PlaylistView view = this;
     private JMenu contextAddPlaylist = null;
+    private DragSource ds = new DragSource();
 
     private JFrame confirmationWindow = null;
 
@@ -65,14 +68,16 @@ public class PlaylistView extends PlayerView {
         LibraryTable.setModel(controller.getTableModelOfData());
         LibraryTable.setPreferredSize(new Dimension(200, 200));
         LibraryTable.setFillsViewportHeight(true);
-        LibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        LibraryTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         LibraryTable.setRowSelectionAllowed(true);
         LibraryTable.setShowVerticalLines(false);
 
         MouseListener mouseListener = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                row = LibraryTable.getSelectedRow();
-                System.out.println("Selected index = " + row);
+                rows = LibraryTable.getSelectedRows();
+                for (int row : rows) {
+                    System.out.println("Selected index = " + row);
+                }
             }
         };
 
@@ -85,6 +90,11 @@ public class PlaylistView extends PlayerView {
         contextPlay.setActionCommand("play");
         LibraryContext.add(contextPlay);
 
+        JMenuItem contextRemove = new JMenuItem("Remove From Playlist");
+        contextRemove.addActionListener(this.contextListener);
+        contextRemove.setActionCommand("remove");
+        LibraryContext.add(contextRemove);
+
         contextAddPlaylist = new JMenu("Add to Playlist");
         collectionManagerController.getPlaylistContexts(contextAddPlaylist, this.contextListener);
         LibraryContext.add(contextAddPlaylist);
@@ -96,9 +106,20 @@ public class PlaylistView extends PlayerView {
             }
         });
 
+        DragGestureListener dragListener = new DragGestureListener() {
+            @Override
+            public void dragGestureRecognized(DragGestureEvent dge) {
+                Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+                JTable jt = (JTable) dge.getComponent();
+                jt.setDragEnabled(true);
+
+                dge.startDrag(cursor, new FileTrans(jt.getSelectedRows()));
+            }
+        };
 
         LibraryTable.add(LibraryContext);
         LibraryTable.setDropTarget(new PlaylistView.LibraryDrop());
+        ds.createDefaultDragGestureRecognizer(LibraryTable, DnDConstants.ACTION_COPY, dragListener);
 
         JScrollPane LibraryScroll = new JScrollPane();
         LibraryScroll.setPreferredSize(new Dimension(300, 200));
@@ -291,8 +312,8 @@ public class PlaylistView extends PlayerView {
         return new ImageIcon(imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
     }
 
-    public Integer getTableRow()	{
-        return row;
+    public int[] getTableRows()	{
+        return rows;
     }
 
     public void display()	{
@@ -357,11 +378,17 @@ public class PlaylistView extends PlayerView {
                 case "play":
                     controller.playSelected();
                     break;
+                case "remove":
+                    controller.removeSelected();
+                    collectionManagerController.refreshWindows();
+                    break;
                 case "addToPlaylist":
                     JMenuItem sourceObj = (JMenuItem) e.getSource();
                     System.out.println("Option selected was " + sourceObj.getText());
-                    Song sng = controller.getSongFromIndex(row);
-                    collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
+                    for (int row : rows) {
+                        Song sng = controller.getSongFromIndex(row);
+                        collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
+                    }
             }
         }
     }
@@ -417,6 +444,37 @@ public class PlaylistView extends PlayerView {
             }
             catch (Exception ex) {
                 ex.printStackTrace();
+            }
+        }
+    }
+
+    public class FileTrans implements Transferable {
+        ArrayList<String> paths;
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            return new DataFlavor[]{DataFlavor.javaFileListFlavor};
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            if (flavor == DataFlavor.javaFileListFlavor)	{
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+            return paths;
+        }
+
+        public FileTrans(int[] rows)	{
+            String songfile;
+            paths = new ArrayList();
+            for (int i = 0; i < rows.length; i++) {
+                songfile = controller.getSongFromIndex(rows[i]).getPath();
+                paths.add(songfile);
             }
         }
     }

@@ -49,7 +49,7 @@ public class MainPlayerView extends PlayerView{
 	private CollectionManagerController collectionManagerController = new CollectionManagerController();
 	private DragSource ds = new DragSource();
 	private ActionListener contextListener = new contextListener();
-	private Integer tableRow = null;
+	private int[] tableRows = null;
 	private String treeString = null;
 	private JLabel NowPlaying = null;
 	private JMenu contextAddPlaylist = null;
@@ -123,14 +123,16 @@ public class MainPlayerView extends PlayerView{
 		LibraryTable.setModel(controller.getTableModelOfData());
 		LibraryTable.setPreferredSize(new Dimension(200, 200));
 		LibraryTable.setFillsViewportHeight(true);
-		LibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		LibraryTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		LibraryTable.setRowSelectionAllowed(true);
 		LibraryTable.setShowVerticalLines(false);
 
 		MouseListener mouseListener = new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				tableRow = LibraryTable.getSelectedRow();
-				System.out.println("Selected index = " + tableRow);
+				tableRows = LibraryTable.getSelectedRows();
+				for (int row : tableRows) {
+					System.out.println("Selected index = " + row);
+				}
 			}
 		};
 
@@ -391,8 +393,8 @@ public class MainPlayerView extends PlayerView{
 		return new ImageIcon(imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
 	}
 
-	public Integer getTableRow()	{
-		return tableRow;
+	public int[] getTableRows()	{
+		return tableRows;
 	}
 
 	public void display()	{
@@ -476,8 +478,10 @@ public class MainPlayerView extends PlayerView{
 				case "addToPlaylist":
 					JMenuItem sourceObj = (JMenuItem) e.getSource();
 					System.out.println("Option selected was " + sourceObj.getText());
-					Song sng = controller.getSongFromIndex(tableRow);
-					collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
+					for (int row : tableRows) {
+						Song sng = controller.getSongFromIndex(row);
+						collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
+					}
 					break;
 				case "openCollection":
 					System.out.println("In open collection");

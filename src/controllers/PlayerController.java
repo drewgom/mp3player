@@ -20,8 +20,10 @@ public class PlayerController {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
 
-		Integer row = playerView.getTableRow();
+		int[] selectedSongs = playerView.getTableRows();
+		Integer row = selectedSongs[0];
 		System.out.println("Row is" + row);
+		playerView.refreshSelected(row);
 
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
@@ -84,12 +86,14 @@ public class PlayerController {
 		System.out.println("Repainted");
 	}
 	public void remove() {
-		Integer row = playerView.getTableRow();
-		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
+		int[] selectedRows = playerView.getTableRows();
+		for (int row : selectedRows) {
+			Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
-		player.getCollection().deleteSongFromCollection(selectedSong);
+			player.getCollection().deleteSongFromCollection(selectedSong);
+			System.out.println("Remove button pressed.");
+		}
 		playerView.repaint();
-		System.out.println("Remove button pressed.");
 	}
 	
 	public void playSelected() {
