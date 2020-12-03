@@ -87,7 +87,7 @@ public class PlayerController {
 		Integer row = playerView.getTableRow();
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
-		LibraryController.remove(selectedSong,row);
+		player.getCollection().deleteSongFromCollection(selectedSong);
 		playerView.repaint();
 		System.out.println("Remove button pressed.");
 	}
@@ -100,8 +100,9 @@ public class PlayerController {
 
 	public void removeSelected() {
 		int index = playerView.getSelectedIndex();
+		Song selectedSong = player.getCollection().getSongsInCollection().get(index);
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
-		LibraryController.remove(getSongFromIndex(index),index);
+		player.getCollection().deleteSongFromCollection(selectedSong);
 	}
 
 	public Integer getIndexOfCurrentSong()	{
@@ -166,5 +167,24 @@ public class PlayerController {
 			}
 		}
 		playerView.repaint();
+	}
+
+	public void droppedOnToTable(String path) {
+		System.out.println("path is" + path);
+		addViaPath(path);
+		System.out.println(player.getCollection());
+		if (player.getCollection() instanceof Playlist)	{
+			System.out.println("is playlist");
+			Playlist playlist = (Playlist) player.getCollection();
+			ArrayList<Song> songs = LibraryController.lib.getSongsInCollection();
+
+			for (Song song : songs)	{
+				System.out.println(song.getPath());
+				if (song.getPath().equals(path))	{
+					System.out.println("same path");
+					playlist.addSongToCollection(song);
+				}
+			}
+		}
 	}
 }

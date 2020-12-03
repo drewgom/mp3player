@@ -410,7 +410,8 @@ public class PlaylistView extends PlayerView {
 
                 for(Object o : result) {
                     System.out.println("Dropped file: "+o.toString());
-                    controller.addViaPath(o.toString());
+                    controller.droppedOnToTable(o.toString());
+                    collectionManagerController.refreshWindows();
                     //Can't write specifics since how you set things up hasn't been pushed to the git.
                 }
             }

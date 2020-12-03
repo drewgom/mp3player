@@ -19,9 +19,9 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -30,6 +30,8 @@ import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Cursor;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainPlayerView extends PlayerView{
@@ -45,7 +47,7 @@ public class MainPlayerView extends PlayerView{
 	private TreeSelectionListener treeListener = new treeListener();
 	private LibraryController libraryController = new LibraryController();
 	private CollectionManagerController collectionManagerController = new CollectionManagerController();
-
+	private DragSource ds = new DragSource();
 	private ActionListener contextListener = new contextListener();
 	private Integer tableRow = null;
 	private String treeString = null;
@@ -163,8 +165,20 @@ public class MainPlayerView extends PlayerView{
 		});
 
 
+		DragGestureListener dragListener = new DragGestureListener() {
+			@Override
+			public void dragGestureRecognized(DragGestureEvent dge) {
+				Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+				JTable jt = (JTable) dge.getComponent();
+				jt.setDragEnabled(true);
+
+				dge.startDrag(cursor, new FileTrans(jt.getSelectedRows()));
+			}
+		};
+
 		LibraryTable.add(LibraryContext);
 		LibraryTable.setDropTarget(new LibraryDrop());
+		ds.createDefaultDragGestureRecognizer(LibraryTable, DnDConstants.ACTION_COPY, dragListener);
 
 		JScrollPane LibraryScroll = new JScrollPane();
 		LibraryScroll.setPreferredSize(new Dimension(300, 200));
@@ -430,12 +444,15 @@ public class MainPlayerView extends PlayerView{
 					break;
 				case "add":
 					controller.addViaPopup();
+					collectionManagerController.refreshWindows();
 					break;
 				case "remove":
 					controller.remove();
+					collectionManagerController.refreshWindows();
 					break;
 				case "createPlaylist":
 					collectionManagerController.createPlaylist();
+					collectionManagerController.refreshWindows();
 					break;
 			}
 		}
@@ -450,9 +467,11 @@ public class MainPlayerView extends PlayerView{
 					break;
 				case "add":
 					controller.addViaPopup();
+					collectionManagerController.refreshWindows();
 					break;
 				case "remove":
 					controller.removeSelected();
+					collectionManagerController.refreshWindows();
 					break;
 				case "addToPlaylist":
 					JMenuItem sourceObj = (JMenuItem) e.getSource();
@@ -511,12 +530,44 @@ public class MainPlayerView extends PlayerView{
 
 				for(Object o : result) {
 					System.out.println("Dropped file: "+o.toString());
-					controller.addViaPath(o.toString());
+					controller.droppedOnToTable(o.toString());
+					collectionManagerController.refreshWindows();
 					//Can't write specifics since how you set things up hasn't been pushed to the git.
 				}
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
+			}
+		}
+	}
+
+	public class FileTrans implements Transferable	{
+		ArrayList<String> paths;
+
+		@Override
+		public DataFlavor[] getTransferDataFlavors() {
+			return new DataFlavor[]{DataFlavor.javaFileListFlavor};
+		}
+
+		@Override
+		public boolean isDataFlavorSupported(DataFlavor flavor) {
+			if (flavor == DataFlavor.javaFileListFlavor)	{
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+			return paths;
+		}
+
+		public FileTrans(int[] rows)	{
+			String songfile;
+			paths = new ArrayList();
+			for (int i = 0; i < rows.length; i++) {
+				songfile = controller.getSongFromIndex(rows[i]).getPath();
+				paths.add(songfile);
 			}
 		}
 	}
