@@ -159,17 +159,21 @@ public class PlayerController {
 		if (collectionName == "Library")	{
 			player.setCollection(Library.getLibrary());
 		} else {
+			System.out.println("about to switch collection 1");
 			ArrayList<Playlist> playlists = CollectionManager.getCollectionManager().getAllPlaylists();
+			System.out.println("about to switch collection 2");
 			for (int i = 0; i < playlists.size(); i++) {
 				System.out.println(playlists.get(i).getName());
 			}
 
 			for (int i = 0; i < playlists.size(); i++) {
-				if(playlists.get(i).getName() == collectionName)	{
+				if(playlists.get(i).getName().equals(collectionName))	{
 					player.setCollection(playlists.get(i));
 				}
 			}
 		}
+		System.out.println("about to switch collection 3");
+		System.out.println("collection is " + player.getCollection());
 		playerView.repaint();
 	}
 

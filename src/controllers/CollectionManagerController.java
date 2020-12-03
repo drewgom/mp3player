@@ -31,10 +31,13 @@ public class CollectionManagerController {
         }
     }
 
-    public void createPlaylist()    {
+    public String createPlaylist()    {
         String response = JOptionPane.showInputDialog("Please enter the new Playlist name:");
+        System.out.println("About to create response");
         collectionManager.createPlaylist(response);
+        System.out.println("created response");
         refreshWindows();
+        return response;
     }
 
     // PLACEHOLDER

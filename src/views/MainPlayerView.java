@@ -453,7 +453,9 @@ public class MainPlayerView extends PlayerView{
 					collectionManagerController.refreshWindows();
 					break;
 				case "createPlaylist":
-					collectionManagerController.createPlaylist();
+					String response = collectionManagerController.createPlaylist();
+					System.out.println("Response is " + response);
+					controller.swtichCollectionForPlayer(response);
 					collectionManagerController.refreshWindows();
 					break;
 			}
