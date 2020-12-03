@@ -35,6 +35,7 @@ public class Playlist extends SongCollection{
     }
 
     public ArrayList<Song> getSongsInCollection() {
+        loadSongsFromDB();
         return songs;
     }
 

@@ -20,8 +20,10 @@ public class PlayerController {
 		System.out.println("Play button pressed.");
 		playerView.setPause();
 
-		Integer row = playerView.getRow();
+		int[] selectedSongs = playerView.getTableRows();
+		Integer row = selectedSongs[0];
 		System.out.println("Row is" + row);
+		playerView.refreshSelected(row);
 
 		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
@@ -84,12 +86,14 @@ public class PlayerController {
 		System.out.println("Repainted");
 	}
 	public void remove() {
-		Integer row = playerView.getRow();
-		Song selectedSong = player.getCollection().getSongsInCollection().get(row);
+		int[] selectedRows = playerView.getTableRows();
+		for (int row : selectedRows) {
+			Song selectedSong = player.getCollection().getSongsInCollection().get(row);
 
-		LibraryController.remove(selectedSong,row);
+			player.getCollection().deleteSongFromCollection(selectedSong);
+			System.out.println("Remove button pressed.");
+		}
 		playerView.repaint();
-		System.out.println("Remove button pressed.");
 	}
 	
 	public void playSelected() {
@@ -100,8 +104,9 @@ public class PlayerController {
 
 	public void removeSelected() {
 		int index = playerView.getSelectedIndex();
+		Song selectedSong = player.getCollection().getSongsInCollection().get(index);
 		System.out.println("Remove selected song: Index "+Integer.toString(index)+".");
-		LibraryController.remove(getSongFromIndex(index),index);
+		player.getCollection().deleteSongFromCollection(selectedSong);
 	}
 
 	public Integer getIndexOfCurrentSong()	{
@@ -117,8 +122,12 @@ public class PlayerController {
 	}
 
 	public Song getSongFromIndex(Integer index)	{
-		ArrayList<Song> songs = Library.getLibrary().getSongsInCollection();
+		ArrayList<Song> songs = player.getCollection().getSongsInCollection();
 		return songs.get(index);
+	}
+
+	public void updateVolume(Double gain)	{
+		player.updateVolume(gain);
 	}
 
 	public Object[] getTableColumnNames()    {
@@ -128,9 +137,9 @@ public class PlayerController {
 	public DefaultTableModel getTableModelOfData()    {
 		DefaultTableModel tableModel = new DefaultTableModel();
 		tableModel.setColumnIdentifiers(getTableColumnNames());
-
+                
 		ArrayList<Song> songs = player.getCollection().getSongsInCollection();
-
+                
 		for (int i = 0; i < songs.size(); i++) {
 			Object[] currentSongData = new Object[getTableColumnNames().length];
 			Song currentSong = songs.get(i);
@@ -146,10 +155,44 @@ public class PlayerController {
 		return tableModel;
 	}
 
-	// PLACEHOLDER
-	public void swtichCollectionForPlayer() {
-		/*Playlist newPlaylist = CollectionManager.getCollectionManager().getAllPlaylists().get();
-		player.setCollection(newPlaylist);
-		playerView.repaint();*/
+	public void swtichCollectionForPlayer(String collectionName) {
+		if (collectionName == "Library")	{
+			player.setCollection(Library.getLibrary());
+		} else {
+			System.out.println("about to switch collection 1");
+			ArrayList<Playlist> playlists = CollectionManager.getCollectionManager().getAllPlaylists();
+			System.out.println("about to switch collection 2");
+			for (int i = 0; i < playlists.size(); i++) {
+				System.out.println(playlists.get(i).getName());
+			}
+
+			for (int i = 0; i < playlists.size(); i++) {
+				if(playlists.get(i).getName().equals(collectionName))	{
+					player.setCollection(playlists.get(i));
+				}
+			}
+		}
+		System.out.println("about to switch collection 3");
+		System.out.println("collection is " + player.getCollection());
+		playerView.repaint();
+	}
+
+	public void droppedOnToTable(String path) {
+		System.out.println("path is" + path);
+		addViaPath(path);
+		System.out.println(player.getCollection());
+		if (player.getCollection() instanceof Playlist)	{
+			System.out.println("is playlist");
+			Playlist playlist = (Playlist) player.getCollection();
+			ArrayList<Song> songs = LibraryController.lib.getSongsInCollection();
+
+			for (Song song : songs)	{
+				System.out.println(song.getPath());
+				if (song.getPath().equals(path))	{
+					System.out.println("same path");
+					playlist.addSongToCollection(song);
+				}
+			}
+		}
 	}
 }

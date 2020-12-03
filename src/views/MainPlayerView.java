@@ -1,20 +1,27 @@
 package views;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
+import controllers.CollectionManagerController;
 import controllers.LibraryController;
 import controllers.PlayerController;
 import models.Player;
+import models.Song;
 
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -23,21 +30,30 @@ import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Cursor;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainPlayerView extends PlayerView{
 	private JFrame mainWindow = null;
-	private String title = "Austin & Drew's MP3 Player";
+	private String title = "Drew's MP3 Player";
 
 	private JTable LibraryTable = null;
 	private JPanel PlayPauseFlip = null;
 	private CardLayout PlayPauseCard = null;
 	private PlayerController controller;
 	private ActionListener listener = new buttonListener();
-	private LibraryController collectionController = new LibraryController();
+	private ChangeListener changeListener = new sliderListener();
+	private TreeSelectionListener treeListener = new treeListener();
+	private LibraryController libraryController = new LibraryController();
+	private CollectionManagerController collectionManagerController = new CollectionManagerController();
+	private DragSource ds = new DragSource();
 	private ActionListener contextListener = new contextListener();
-	private Integer row = null;
+	private int[] tableRows = null;
+	private String treeString = null;
 	private JLabel NowPlaying = null;
+	private JMenu contextAddPlaylist = null;
+	JTree tree = null;
 
 	private JFrame confirmationWindow = null;
 
@@ -60,7 +76,45 @@ public class MainPlayerView extends PlayerView{
 
 		NowPlaying = new JLabel("Now Playing - Nothing");
 		NowPlaying.setHorizontalAlignment(SwingConstants.CENTER);
-		mainWindow.getContentPane().add(NowPlaying, BorderLayout.CENTER);
+		// mainWindow.getContentPane().add(NowPlaying, BorderLayout.CENTER);
+
+		tree = new JTree(collectionManagerController.getTreeOfPlaylists());
+		tree.setRootVisible(false);
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
+
+		JPopupMenu TreeContext = new JPopupMenu();
+
+		JMenuItem contextDeleteCollection = new JMenuItem("Delete Song Collection");
+		contextDeleteCollection.addActionListener(this.contextListener);
+		contextDeleteCollection.setActionCommand("deleteCollection");
+		TreeContext.add(contextDeleteCollection);
+
+		JMenuItem contextOpenCollection = new JMenuItem("Open Song Collection in New Window");
+		contextOpenCollection.addActionListener(this.contextListener);
+		contextOpenCollection.setActionCommand("openCollection");
+
+		tree.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				Object[] pathAsArray = tree.getPathForLocation(e.getX(), e.getY()).getPath();
+				System.out.println("Hello");
+				treeString = pathAsArray[pathAsArray.length-1].toString();
+				System.out.println(treeString);
+			}
+		});
+
+		tree.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(SwingUtilities.isRightMouseButton(e))	{
+					TreeContext.show(tree, e.getX(), e.getY());
+				}
+			}
+		});
+
+		TreeContext.add(contextOpenCollection);
+		tree.addTreeSelectionListener(treeListener);
+		mainWindow.add(tree);
 
 		JPanel Interface = new JPanel();
 		mainWindow.getContentPane().add(Interface, BorderLayout.EAST);
@@ -69,14 +123,16 @@ public class MainPlayerView extends PlayerView{
 		LibraryTable.setModel(controller.getTableModelOfData());
 		LibraryTable.setPreferredSize(new Dimension(200, 200));
 		LibraryTable.setFillsViewportHeight(true);
-		LibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		LibraryTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		LibraryTable.setRowSelectionAllowed(true);
 		LibraryTable.setShowVerticalLines(false);
 
 		MouseListener mouseListener = new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				row = LibraryTable.getSelectedRow();
-				System.out.println("Selected index = " + row);
+				tableRows = LibraryTable.getSelectedRows();
+				for (int row : tableRows) {
+					System.out.println("Selected index = " + row);
+				}
 			}
 		};
 
@@ -99,6 +155,10 @@ public class MainPlayerView extends PlayerView{
 		contextRemove.setActionCommand("remove");
 		LibraryContext.add(contextRemove);
 
+		contextAddPlaylist = new JMenu("Add to Playlist");
+		collectionManagerController.getPlaylistContexts(contextAddPlaylist, this.contextListener);
+		LibraryContext.add(contextAddPlaylist);
+
 		LibraryTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton() == e.BUTTON3)
@@ -107,8 +167,20 @@ public class MainPlayerView extends PlayerView{
 		});
 
 
+		DragGestureListener dragListener = new DragGestureListener() {
+			@Override
+			public void dragGestureRecognized(DragGestureEvent dge) {
+				Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+				JTable jt = (JTable) dge.getComponent();
+				jt.setDragEnabled(true);
+
+				dge.startDrag(cursor, new FileTrans(jt.getSelectedRows()));
+			}
+		};
+
 		LibraryTable.add(LibraryContext);
 		LibraryTable.setDropTarget(new LibraryDrop());
+		ds.createDefaultDragGestureRecognizer(LibraryTable, DnDConstants.ACTION_COPY, dragListener);
 
 		JScrollPane LibraryScroll = new JScrollPane();
 		LibraryScroll.setPreferredSize(new Dimension(300, 200));
@@ -198,6 +270,7 @@ public class MainPlayerView extends PlayerView{
 		VolumeSlider.setPreferredSize(new Dimension(20, 60));
 		VolumeSlider.setOrientation(SwingConstants.VERTICAL);
 		SongControls.add(VolumeSlider, BorderLayout.EAST);
+		VolumeSlider.addChangeListener(changeListener);
 
 		this.mainWindow.pack();
 
@@ -246,6 +319,10 @@ public class MainPlayerView extends PlayerView{
 		LibraryMenu.add(menuRemove);
 
 		JMenu OptionsMenu = new JMenu("Options");
+		JMenuItem createPlaylist = new JMenuItem("Create Playlist");
+		createPlaylist.addActionListener(this.listener);
+		createPlaylist.setActionCommand("createPlaylist");
+		OptionsMenu.add(createPlaylist);
 		menuBar.add(OptionsMenu);
 
 		this.playBackButtons[0] = SkipBackButton;
@@ -259,6 +336,7 @@ public class MainPlayerView extends PlayerView{
 		Timebar.setValue(0);
 		Timebar.setPaintLabels(true);
 		SongControls.add(Timebar, BorderLayout.NORTH);
+		collectionManagerController.attachWindow(this);
 	}
 	
 	public File addPopup() {
@@ -315,8 +393,8 @@ public class MainPlayerView extends PlayerView{
 		return new ImageIcon(imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
 	}
 
-	public Integer getRow()	{
-		return row;
+	public int[] getTableRows()	{
+		return tableRows;
 	}
 
 	public void display()	{
@@ -325,6 +403,13 @@ public class MainPlayerView extends PlayerView{
 
 	public void repaint()	{
 		DefaultTableModel model = controller.getTableModelOfData();
+		tree.setModel(collectionManagerController.getTreeOfPlaylists());
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
+		contextAddPlaylist.removeAll();
+		collectionManagerController.getPlaylistContexts(contextAddPlaylist,this.contextListener);
+		System.out.println("about to repaint");
 		LibraryTable.setModel(model);
 	}
 
@@ -361,9 +446,17 @@ public class MainPlayerView extends PlayerView{
 					break;
 				case "add":
 					controller.addViaPopup();
+					collectionManagerController.refreshWindows();
 					break;
 				case "remove":
 					controller.remove();
+					collectionManagerController.refreshWindows();
+					break;
+				case "createPlaylist":
+					String response = collectionManagerController.createPlaylist();
+					System.out.println("Response is " + response);
+					controller.swtichCollectionForPlayer(response);
+					collectionManagerController.refreshWindows();
 					break;
 			}
 		}
@@ -378,11 +471,58 @@ public class MainPlayerView extends PlayerView{
 					break;
 				case "add":
 					controller.addViaPopup();
+					collectionManagerController.refreshWindows();
 					break;
 				case "remove":
 					controller.removeSelected();
+					collectionManagerController.refreshWindows();
+					break;
+				case "addToPlaylist":
+					JMenuItem sourceObj = (JMenuItem) e.getSource();
+					System.out.println("Option selected was " + sourceObj.getText());
+					for (int row : tableRows) {
+						Song sng = controller.getSongFromIndex(row);
+						collectionManagerController.addSongToPlaylist(sng, sourceObj.getText());
+					}
+					break;
+				case "openCollection":
+					System.out.println("In open collection");
+					collectionManagerController.openCollection(treeString);
+					controller.swtichCollectionForPlayer("Library");
+					break;
+				case "deleteCollection":
+					collectionManagerController.deletePlaylist(treeString);
 					break;
 			}
+		}
+	}
+
+	public class treeListener implements TreeSelectionListener {
+		@Override
+		public void valueChanged(TreeSelectionEvent e) {
+			System.out.println("value changed");
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					tree.getLastSelectedPathComponent();
+			/* if nothing is selected */
+			if (node == null) return;
+
+			System.out.println("clicked on tree");
+			Object nodeInfo = node.getUserObject();
+			System.out.println(nodeInfo.toString());
+
+			if (nodeInfo.toString() != "Playlists") {
+				controller.swtichCollectionForPlayer(nodeInfo.toString());
+				System.out.println("After call to switch collection");
+			}
+		}
+	}
+
+	public class sliderListener implements ChangeListener	{
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			JSlider source =(JSlider) e.getSource();
+			double valueAsDouble = source.getValue();
+			controller.updateVolume(valueAsDouble/100);
 		}
 	}
 
@@ -396,7 +536,8 @@ public class MainPlayerView extends PlayerView{
 
 				for(Object o : result) {
 					System.out.println("Dropped file: "+o.toString());
-					controller.addViaPath(o.toString());
+					controller.droppedOnToTable(o.toString());
+					collectionManagerController.refreshWindows();
 					//Can't write specifics since how you set things up hasn't been pushed to the git.
 				}
 			}
@@ -404,5 +545,40 @@ public class MainPlayerView extends PlayerView{
 				ex.printStackTrace();
 			}
 		}
+	}
+
+	public class FileTrans implements Transferable	{
+		ArrayList<String> paths;
+
+		@Override
+		public DataFlavor[] getTransferDataFlavors() {
+			return new DataFlavor[]{DataFlavor.javaFileListFlavor};
+		}
+
+		@Override
+		public boolean isDataFlavorSupported(DataFlavor flavor) {
+			if (flavor == DataFlavor.javaFileListFlavor)	{
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+			return paths;
+		}
+
+		public FileTrans(int[] rows)	{
+			String songfile;
+			paths = new ArrayList();
+			for (int i = 0; i < rows.length; i++) {
+				songfile = controller.getSongFromIndex(rows[i]).getPath();
+				paths.add(songfile);
+			}
+		}
+	}
+
+	public ActionListener getContextListener() {
+		return contextListener;
 	}
 }
